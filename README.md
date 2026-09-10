@@ -114,7 +114,6 @@ API)를 직접 호출해 파일을 읽고 쓰기 때문에, 다음 사항을 반
 - **React 19 + Vite** — 정적 SPA, GitHub Pages 배포
 - **xlsx (SheetJS)** — 네이버 발주발송관리 엑셀 파싱
 - **React Context API** — 화면(사이드바 메뉴) 전환에도 주문/재고 데이터 유지
-- **recharts** — 채널별 주문 비중 도넛차트
 - **react-router-dom (HashRouter)** — GitHub Pages 새로고침 404 이슈 없이
   화면 라우팅 (앞으로 추가될 사이드바 메뉴들을 위한 구조)
 

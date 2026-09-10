@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useData } from '../../context/DataContext'
 import FilterBar from '../../components/dashboard/FilterBar'
 import SummaryCards from '../../components/dashboard/SummaryCards'
-import ChannelDonutCard from '../../components/dashboard/ChannelDonutCard'
+import ChannelBarCard from '../../components/dashboard/ChannelBarCard'
 import BookRankingTable from '../../components/dashboard/BookRankingTable'
 import InventoryTable from '../../components/dashboard/InventoryTable'
 import LowStockAlertPanel from '../../components/dashboard/LowStockAlertPanel'
@@ -108,7 +108,7 @@ export default function DashboardPage() {
 
       <div className="dashboard-page__cards">
         <SummaryCards summary={summary} />
-        {channelBreakdown.length > 0 && <ChannelDonutCard data={channelBreakdown} />}
+        {channelBreakdown.length > 0 && <ChannelBarCard data={channelBreakdown} />}
       </div>
 
       <div className="dashboard-page__tables">
