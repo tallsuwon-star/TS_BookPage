@@ -3,7 +3,7 @@ import Badge from '../common/Badge'
 import SearchInput from '../common/SearchInput'
 import { formatNumber } from '../../utils/format'
 import { formatDateDisplay } from '../../utils/dateUtils'
-import { normalizeChannel } from '../../utils/aggregation'
+import { isCancelProcessed, normalizeChannel } from '../../utils/aggregation'
 import '../common/DataTable.css'
 
 const TYPE_COLORS = {
@@ -14,6 +14,13 @@ const TYPE_COLORS = {
 const DEFAULT_COLOR = { color: '#475569', bg: '#f1f5f9' }
 
 export default function CancelReturnListTable({ records, search, onSearchChange }) {
+  // 처리상태가 "완료"류가 아닌(=아직 처리 안 된) 건을 위쪽에 남기고,
+  // 처리된 건은 아래로 내린다. 담당자가 매일 처리상태를 확인하므로
+  // 처리상태 값 자체가 없어도(빈 값 = 미처리로 간주) 문제없다.
+  const sortedRecords = [...records].sort(
+    (a, b) => Number(isCancelProcessed(a.status)) - Number(isCancelProcessed(b.status)),
+  )
+
   return (
     <Card
       title="전체 취소/반품 내역"
@@ -41,7 +48,7 @@ export default function CancelReturnListTable({ records, search, onSearchChange 
                 </td>
               </tr>
             )}
-            {records.map((r) => {
+            {sortedRecords.map((r) => {
               const style = TYPE_COLORS[r.claimType] || DEFAULT_COLOR
               return (
                 <tr key={r.id}>

@@ -11,6 +11,66 @@ import '../common/DataTable.css'
 export default function OrderListTable({ orders, shippingInfo, onOpenInvoice, onOpenDetail }) {
   const total = orders.length
 
+  // 발송대기 건은 위쪽에, 발송중/발송완료/취소 건은 아래쪽에 모아서
+  // 처리해야 할 주문이 한눈에 보이게 한다. 같은 그룹 안에서는 원래 순서를
+  // 그대로 유지한다.
+  const rows = orders.map((order, idx) => {
+    const shipping = shippingInfo[order.id]
+    const displayStatus = shipping?.status || order.deliveryStatus
+    return {
+      order,
+      no: total - idx,
+      shipping,
+      displayStatus,
+      shipped: isShippedStatus(displayStatus),
+      cancelled: isCancelledStatus(displayStatus),
+      statusStyle: getDeliveryStatusStyle(displayStatus),
+    }
+  })
+  const pendingRows = rows.filter((r) => !r.shipped && !r.cancelled)
+  const doneRows = rows.filter((r) => r.shipped || r.cancelled)
+
+  const renderRow = ({ order, no, shipping, displayStatus, shipped, cancelled, statusStyle }) => (
+    <tr key={order.id}>
+      <td>{no}</td>
+      <td className="data-table__name">{order.productName}</td>
+      <td>{order.channel ? normalizeChannel(order.channel) : '-'}</td>
+      <td className="data-table--num">{formatNumber(order.quantity)}</td>
+      <td className="data-table--num">
+        {formatNumber((Number(order.quantity) || 0) * (Number(order.price) || 0))}원
+      </td>
+      <td>{formatDateDisplay(order.orderDate)}</td>
+      <td>
+        {displayStatus ? <Badge label={displayStatus} color={statusStyle.color} background={statusStyle.bg} /> : '-'}
+      </td>
+      <td>{shipping?.processedBy || (cancelled ? '-' : '관리자')}</td>
+      <td>
+        <div className="data-table__action-stack">
+          {cancelled ? (
+            <button type="button" className="btn btn--ghost btn--table-action" disabled>
+              처리완료
+            </button>
+          ) : shipped ? (
+            <button type="button" className="btn btn--ghost btn--table-action">
+              반품신청
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="btn btn--primary btn--table-action"
+              onClick={() => onOpenInvoice(order)}
+            >
+              송장처리
+            </button>
+          )}
+          <button type="button" className="btn btn--ghost btn--table-action" onClick={() => onOpenDetail(order)}>
+            주문상세
+          </button>
+        </div>
+      </td>
+    </tr>
+  )
+
   return (
     <Card title="교재 주문 목록" className="data-table-card">
       <div className="data-table-scroll">
@@ -36,61 +96,13 @@ export default function OrderListTable({ orders, shippingInfo, onOpenInvoice, on
                 </td>
               </tr>
             )}
-            {orders.map((order, idx) => {
-              const shipping = shippingInfo[order.id]
-              const displayStatus = shipping?.status || order.deliveryStatus
-              const shipped = isShippedStatus(displayStatus)
-              const cancelled = isCancelledStatus(displayStatus)
-              const statusStyle = getDeliveryStatusStyle(displayStatus)
-              return (
-                <tr key={order.id || idx}>
-                  <td>{total - idx}</td>
-                  <td className="data-table__name">{order.productName}</td>
-                  <td>{order.channel ? normalizeChannel(order.channel) : '-'}</td>
-                  <td className="data-table--num">{formatNumber(order.quantity)}</td>
-                  <td className="data-table--num">
-                    {formatNumber((Number(order.quantity) || 0) * (Number(order.price) || 0))}원
-                  </td>
-                  <td>{formatDateDisplay(order.orderDate)}</td>
-                  <td>
-                    {displayStatus ? (
-                      <Badge label={displayStatus} color={statusStyle.color} background={statusStyle.bg} />
-                    ) : (
-                      '-'
-                    )}
-                  </td>
-                  <td>{shipping?.processedBy || (cancelled ? '-' : '관리자')}</td>
-                  <td>
-                    <div className="data-table__action-stack">
-                      {cancelled ? (
-                        <button type="button" className="btn btn--ghost btn--table-action" disabled>
-                          처리완료
-                        </button>
-                      ) : shipped ? (
-                        <button type="button" className="btn btn--ghost btn--table-action">
-                          반품신청
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          className="btn btn--primary btn--table-action"
-                          onClick={() => onOpenInvoice(order)}
-                        >
-                          송장처리
-                        </button>
-                      )}
-                      <button
-                        type="button"
-                        className="btn btn--ghost btn--table-action"
-                        onClick={() => onOpenDetail(order)}
-                      >
-                        주문상세
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              )
-            })}
+            {pendingRows.map(renderRow)}
+            {pendingRows.length > 0 && doneRows.length > 0 && (
+              <tr className="data-table__divider-row">
+                <td colSpan={9}>발송중 · 처리완료</td>
+              </tr>
+            )}
+            {doneRows.map(renderRow)}
           </tbody>
         </table>
       </div>

@@ -20,10 +20,10 @@ export function isShippedStatus(status) {
 }
 
 // 배송상태를 한눈에 구분할 수 있도록 색을 입힌다: 발송대기(빨강) /
-// 발송중·발송완료(초록) / 취소·반품(회색).
+// 발송중·발송완료(연두) / 취소·반품(회색).
 export function getDeliveryStatusStyle(status) {
   if (isCancelledStatus(status)) return { color: '#64748b', bg: '#f1f5f9' }
-  if (isShippedStatus(status)) return { color: '#15803d', bg: '#f0fdf4' }
+  if (isShippedStatus(status)) return { color: '#4d7c0f', bg: '#f7fee7' }
   return { color: '#dc2626', bg: '#fef2f2' }
 }
 
@@ -188,6 +188,14 @@ export function sortCancelReturnBooks(list, sortKey) {
   if (sortKey === 'qty') sorted.sort((a, b) => b.qty - a.qty)
   else sorted.sort((a, b) => b.count - a.count)
   return sorted
+}
+
+// 취소/반품 목록에서 아직 처리 안 된 건이 위에 남아있고, 처리된 건은
+// 아래로 내려가도록 정렬할 때 쓰는 판정 기준.
+const CANCEL_PROCESSED_KEYWORDS = ['완료', '승인', '환불완료', '처리완료']
+
+export function isCancelProcessed(status) {
+  return CANCEL_PROCESSED_KEYWORDS.some((k) => String(status || '').includes(k))
 }
 
 export function getAllClaimTypes(records) {

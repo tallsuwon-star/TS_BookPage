@@ -1,5 +1,11 @@
 import * as XLSX from 'xlsx'
-import { FIELD_DEFS, CANCEL_RETURN_FIELD_DEFS, NAVER_EXPORT_MIN_COLUMNS, isTextbookProduct } from './columnAliases'
+import {
+  FIELD_DEFS,
+  CANCEL_RETURN_FIELD_DEFS,
+  ORDER_EXTRA_FIELD_DEFS,
+  NAVER_EXPORT_MIN_COLUMNS,
+  isTextbookProduct,
+} from './columnAliases'
 import { toISODate } from './dateUtils'
 
 // 네이버 발주발송관리 파일은 시트의 "!ref"(사용 범위)가 실제 데이터보다
@@ -129,33 +135,44 @@ async function parseGenericExcelFile(file, fieldDefs, buildRecord, extraFieldDef
   }
 }
 
-// ⚠️ 회원 이름/연락처/이메일 등 개인정보 열은 파일에 있더라도 절대
-// 추출하지 않는다. (한때 마스킹 후 저장하는 예외를 뒀던 적이 있으나,
-// 새 저장소로 이전하면서 원래 원칙대로 완전히 되돌렸다.)
+// ⚠️ 주문자명/연락처/이메일/주문번호는 팀에서 업로드하는 파일이 항상 사전에
+// 가명·임의값으로 치환되어 있다는 전제로 마스킹 없이 그대로 읽어들인다
+// (columnAliases.js의 ORDER_EXTRA_FIELD_DEFS 주석 참고). 실제 회원
+// 개인정보가 담긴 파일을 올리게 되는 시점이 오면 이 부분을 반드시
+// 다시 마스킹하거나 제거해야 한다.
 export async function parseOrderExcelFile(file) {
   let skippedNonTextbook = 0
-  const { records, meta } = await parseGenericExcelFile(file, FIELD_DEFS, (get, r, i) => {
-    const productName = String(get('productName') || '').trim()
-    if (!productName) return null // 합계/공백 행 등 상품명이 없는 행은 제외
+  const { records, meta } = await parseGenericExcelFile(
+    file,
+    FIELD_DEFS,
+    (get, r, i) => {
+      const productName = String(get('productName') || '').trim()
+      if (!productName) return null // 합계/공백 행 등 상품명이 없는 행은 제외
 
-    // 발주발송관리 파일에는 화상영어 수강권, 10원 체험/3+1 이벤트 등
-    // 교재가 아닌 상품 주문도 함께 섞여 내려온다. 상품명에 교재 키워드가
-    // 없으면 "교재상품 결제확인" 집계 대상에서 제외한다.
-    if (!isTextbookProduct(productName)) {
-      skippedNonTextbook += 1
-      return null
-    }
+      // 발주발송관리 파일에는 화상영어 수강권, 10원 체험/3+1 이벤트 등
+      // 교재가 아닌 상품 주문도 함께 섞여 내려온다. 상품명에 교재 키워드가
+      // 없으면 "교재상품 결제확인" 집계 대상에서 제외한다.
+      if (!isTextbookProduct(productName)) {
+        skippedNonTextbook += 1
+        return null
+      }
 
-    return {
-      id: `row${r}-${i}`,
-      orderDate: toISODate(get('orderDate')),
-      productName,
-      quantity: Number(get('quantity')) || 0,
-      price: parsePrice(get('price')),
-      channel: String(get('channel') || '').trim(),
-      deliveryStatus: String(get('deliveryStatus') || '').trim(),
-    }
-  })
+      return {
+        id: `row${r}-${i}`,
+        orderDate: toISODate(get('orderDate')),
+        productName,
+        quantity: Number(get('quantity')) || 0,
+        price: parsePrice(get('price')),
+        channel: String(get('channel') || '').trim(),
+        deliveryStatus: String(get('deliveryStatus') || '').trim(),
+        orderNumber: String(get('orderNumber') || '').trim(),
+        buyerName: String(get('buyerName') || '').trim(),
+        phone: String(get('phone') || '').trim(),
+        email: String(get('email') || '').trim(),
+      }
+    },
+    ORDER_EXTRA_FIELD_DEFS,
+  )
   return { orders: records, meta: { ...meta, skippedNonTextbook } }
 }
 

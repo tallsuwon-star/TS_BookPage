@@ -2,12 +2,10 @@ import { formatNumber } from '../../utils/format'
 import { formatDateDisplay } from '../../utils/dateUtils'
 import './OrderSidePanel.css'
 
-// ⚠️ 개인정보 보호를 위해 주문자 이름/이메일/연락처/배송지 주소는 애초에
-// 엑셀에서 읽어들이지 않는다(columnAliases.js 참고). 실제 배송 업무에는
-// 필요하지만, 이 값들을 공유 저장소(data.json)에 저장하는 순간 개인정보를
-// 외부에 노출하는 셈이라 이 화면에는 자리만 만들어두고 값은 표시하지 않는다.
-const PII_PLACEHOLDER = '비공개 (개인정보 보호)'
-
+// ⚠️ 팀 확인 결과(2026-09-10) 실제 업로드하는 파일은 항상 사전에 가명·임의
+// 연락처로 치환해둔 파일이라 실제 회원 개인정보가 아니므로, 주문자명/이메일/
+// 연락처/주문번호를 마스킹 없이 그대로 표시한다. 배송지 주소는 애초에
+// 엑셀에서 읽어들이지 않으므로 여전히 비공개로 표시한다.
 export default function OrderSidePanel({ order, title, onClose, children }) {
   return (
     <aside className="order-panel">
@@ -22,15 +20,15 @@ export default function OrderSidePanel({ order, title, onClose, children }) {
         <h4>기본 정보</h4>
         <dl className="order-panel__dl">
           <dt>주문번호</dt>
-          <dd>{order.id}</dd>
+          <dd>{order.orderNumber || order.id}</dd>
           <dt>주문일시</dt>
           <dd>{formatDateDisplay(order.orderDate)}</dd>
           <dt>주문자</dt>
-          <dd>{PII_PLACEHOLDER}</dd>
+          <dd>{order.buyerName || '-'}</dd>
           <dt>E-mail</dt>
-          <dd>{PII_PLACEHOLDER}</dd>
+          <dd>{order.email || '-'}</dd>
           <dt>연락처</dt>
-          <dd>{PII_PLACEHOLDER}</dd>
+          <dd>{order.phone || '-'}</dd>
         </dl>
       </section>
 

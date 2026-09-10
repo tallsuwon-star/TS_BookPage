@@ -8,7 +8,9 @@ const COURIERS = ['CJ대한통운', '우체국택배', '롯데택배', '한진�
 
 export default function InvoiceProcessPanel({ order, onSave, onClose }) {
   const [addressConfirmed, setAddressConfirmed] = useState(false)
-  const [courier, setCourier] = useState('')
+  // 팀에서 실제로 CJ대한통운을 주로 쓰기 때문에 기본 선택값으로 지정.
+  // 다른 택배사를 쓰는 주문이면 드롭다운에서 바꾸면 된다.
+  const [courier, setCourier] = useState('CJ대한통운')
   const [courierConfirmed, setCourierConfirmed] = useState(false)
   const [trackingNumber, setTrackingNumber] = useState('')
   const [printed, setPrinted] = useState(false)
@@ -40,7 +42,7 @@ export default function InvoiceProcessPanel({ order, onSave, onClose }) {
 
       <section className="order-panel__section">
         <h5>① 배송지 확인</h5>
-        <p className="order-panel__muted">수령인 / 주소: 비공개 (개인정보 보호)</p>
+        <p className="order-panel__muted">수령인: {order.buyerName || '-'} / 주소: 비공개 (주소는 수집하지 않음)</p>
         <p className="order-panel__notice">⚠ 오배송 방지를 위해 발송 전 반드시 원본 엑셀에서 실제 주소를 확인하세요.</p>
         <button type="button" className="btn btn--ghost" onClick={() => setAddressConfirmed(true)} disabled={addressConfirmed}>
           {addressConfirmed ? '확인 완료' : '배송지 확인'}
@@ -96,6 +98,7 @@ export default function InvoiceProcessPanel({ order, onSave, onClose }) {
         >
           {printed ? '처리 완료' : '송장 인쇄'}
         </button>
+        <p className="order-panel__muted">※ 송장 인쇄 시 상담관리에 교재 발송 관련 내용이 기록됩니다.</p>
       </section>
 
       <section className="order-panel__section">
