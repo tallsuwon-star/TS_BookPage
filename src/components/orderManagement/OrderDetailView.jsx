@@ -2,7 +2,7 @@ import { useState } from 'react'
 import OrderSidePanel from './OrderSidePanel'
 
 export default function OrderDetailView({ order, shipping, onUpdateStatus, onClose }) {
-  const [status, setStatus] = useState(shipping?.status || order.deliveryStatus || '준비')
+  const [status, setStatus] = useState(shipping?.status || '준비')
   const [notice, setNotice] = useState(
     `안녕하세요, 회원님.\n이번에 구매하신 [${order.productName}]이(가) ${shipping?.courier || '[택배사]'}(으)로 발송되었으며, 영업일 기준 3일 정도 소요될 수 있습니다.\n송장번호는 ${shipping?.trackingNumber || '[송장번호]'}입니다.`,
   )

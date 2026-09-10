@@ -4,7 +4,7 @@ import { classifyBookCategory } from './columnAliases'
 // 네이버 배송상태 값은 셀러 설정에 따라 조금씩 다르게 표기될 수 있어
 // 포함 여부(includes) 기준으로 판정한다.
 const CANCELLED_KEYWORDS = ['취소', '반품', '교환', '환불']
-const SHIPPED_KEYWORDS = ['배송중', '배송완료', '구매확정', '발송완료', '배송지연']
+const SHIPPED_KEYWORDS = ['배송중', '배송완료', '구매확정', '발송완료', '배송지연', '발송중']
 
 export function isCancelledStatus(status) {
   const str = String(status || '')
