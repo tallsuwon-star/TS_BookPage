@@ -1,0 +1,68 @@
+.mapping-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 18, 28, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.mapping-modal {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-md);
+}
+
+.mapping-modal h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.mapping-modal__desc {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin: 0 0 16px;
+}
+
+.mapping-modal__warning {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+
+.mapping-modal__warning p {
+  margin: 4px 0;
+}
+
+.mapping-modal__table {
+  width: 100%;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+.mapping-modal__table th,
+.mapping-modal__table td {
+  text-align: left;
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mapping-modal__missing {
+  color: var(--color-danger);
+}
+
+.mapping-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

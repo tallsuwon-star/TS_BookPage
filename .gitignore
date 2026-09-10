@@ -1,0 +1,34 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# 환경변수 (GitHub 토큰 등 민감 정보) - 절대 커밋 금지
+.env
+.env.*
+!.env.example
+
+# data.json은 앱이 GitHub Contents API로 직접 읽고 쓰는 런타임 데이터라
+# 소스코드로 커밋하지 않는다. 처음 파일이 없으면 앱이 빈 상태로 시작하고
+# 최초 저장 시 자동으로 생성된다.
+data.json
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

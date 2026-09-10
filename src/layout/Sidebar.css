@@ -1,0 +1,121 @@
+.sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  background: var(--color-lnb-bg);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: var(--header-height);
+  height: calc(100vh - var(--header-height));
+  overflow-y: auto;
+  font-family: var(--font-lms);
+}
+
+.sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  gap: 2px;
+}
+
+.sidebar__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+}
+
+.sidebar__item:hover:not(.sidebar__item--disabled) {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.sidebar__item--active {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-lnb-accent);
+  font-weight: 700;
+  text-shadow: 0 0 6px var(--color-lnb-accent-glow);
+  /* 기존 LMS 관리자 페이지의 mws.theme.css: 활성 메뉴 글자색 + 발광 효과를 참고 */
+  border-left: 3px solid var(--color-lnb-accent);
+}
+
+.sidebar__item--disabled {
+  color: rgba(255, 255, 255, 0.3);
+  cursor: not-allowed;
+}
+
+.sidebar__item-icon {
+  font-size: 16px;
+}
+
+.sidebar__badge {
+  margin-left: auto;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.sidebar__group {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar__item--toggle {
+  width: 100%;
+  border: none;
+  border-left: 3px solid transparent;
+  background: transparent;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sidebar__item--toggle.sidebar__item--open {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.sidebar__chevron {
+  margin-left: auto;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.sidebar__submenu {
+  display: flex;
+  flex-direction: column;
+  padding: 2px 0 6px 34px;
+  gap: 1px;
+}
+
+.sidebar__subitem {
+  padding: 6px 10px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+}
+
+.sidebar__subitem:hover:not(.sidebar__subitem--disabled) {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.sidebar__subitem--active {
+  color: var(--color-lnb-accent);
+  font-weight: 700;
+  text-shadow: 0 0 6px var(--color-lnb-accent-glow);
+}
+
+.sidebar__subitem--disabled {
+  color: rgba(255, 255, 255, 0.28);
+  cursor: not-allowed;
+}

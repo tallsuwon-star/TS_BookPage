@@ -1,0 +1,44 @@
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-layout__body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.app-layout__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-layout__error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 24px;
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  font-size: 13px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.app-layout__error button {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.app-layout__content {
+  flex: 1;
+  padding: 24px;
+  min-width: 0;
+}

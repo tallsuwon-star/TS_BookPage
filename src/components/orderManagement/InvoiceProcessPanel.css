@@ -1,0 +1,20 @@
+.invoice-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  color: var(--color-text-faint);
+}
+
+.invoice-steps__done {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.invoice-steps__select {
+  width: 100%;
+  margin-bottom: 8px;
+}

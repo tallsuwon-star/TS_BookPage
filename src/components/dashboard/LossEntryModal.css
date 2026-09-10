@@ -1,0 +1,42 @@
+.loss-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 18, 28, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.loss-modal {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: var(--shadow-md);
+}
+
+.loss-modal h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.loss-modal__desc {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+.loss-modal__input {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.loss-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

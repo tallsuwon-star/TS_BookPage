@@ -1,0 +1,10 @@
+.order-management__body {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.order-management__table {
+  flex: 1;
+  min-width: 0;
+}
