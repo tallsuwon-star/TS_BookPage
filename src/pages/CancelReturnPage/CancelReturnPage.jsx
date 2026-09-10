@@ -20,7 +20,7 @@ import '../DashboardPage/DashboardPage.css'
 import './CancelReturnPage.css'
 
 export default function CancelReturnPage() {
-  const { orders, cancelReturns, resetCancelReturns, loading } = useData()
+  const { orders, eventOrders, cancelReturns, resetCancelReturns, loading } = useData()
 
   const [{ startDate, endDate }, setDateRange] = useState(defaultDateRange())
   const [sortKey, setSortKey] = useState('count')
@@ -31,10 +31,13 @@ export default function CancelReturnPage() {
 
   // "주문취소/반품관리" 전용 파일로 올린 내역 + 발주발송관리(주문) 파일의
   // 배송상태에 "취소"가 찍혀 자동으로 감지된 내역을 합쳐서 보여준다.
-  // 후자는 orders에서 매번 다시 계산하는 값이라 따로 저장/동기화할 필요가 없다.
+  // 교재 주문(orders)뿐 아니라 화상영어 체험/3+1/10원 이벤트 등 교재가
+  // 아닌 주문(eventOrders)도 똑같이 "취소"될 수 있으므로 둘 다 검사한다.
+  // orders/eventOrders에서 매번 다시 계산하는 값이라 따로 저장/동기화할
+  // 필요가 없다.
   const allRecords = useMemo(
-    () => [...cancelReturns, ...extractCancelledFromOrders(orders)],
-    [cancelReturns, orders],
+    () => [...cancelReturns, ...extractCancelledFromOrders([...orders, ...eventOrders])],
+    [cancelReturns, orders, eventOrders],
   )
 
   const claimTypeOptions = useMemo(() => getAllClaimTypes(allRecords), [allRecords])
