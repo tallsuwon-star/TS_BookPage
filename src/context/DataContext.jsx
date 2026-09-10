@@ -29,6 +29,19 @@ export function DataProvider({ children }) {
     }
   }, [])
 
+  // 저장이 아직 GitHub에 반영되기 전에 새로고침/탭 닫기를 하면 방금 올린
+  // 파일이 사라진 것처럼 보일 수 있다. 저장이 진행 중일 때는 브라우저가
+  // 이탈 전 확인창을 띄우게 해서 이런 경우를 막는다.
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (!syncing) return
+      e.preventDefault()
+      e.returnValue = ''
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [syncing])
+
   const loadRemote = useCallback(async () => {
     if (!configured) {
       setLoading(false)
@@ -103,12 +116,14 @@ export function DataProvider({ children }) {
 
   // parsedEventOrders는 같은 주문 파일에서 교재가 아닌 상품(3+1/10원 이벤트
   // 등)으로 분류된 행들이다. "네이버 이벤트 주문건" 화면에서 확인할 수
-  // 있도록 orders와 함께 한 번에 저장한다.
+  // 있도록 orders와 함께 한 번에 저장한다. 저장 성공 여부(boolean)를
+  // 그대로 반환해서, 업로드 버튼 쪽에서 "저장까지 끝났다"를 확인하고
+  // 실패하면 다시 시도할 수 있게 한다.
   const uploadOrders = useCallback(
     async (parsedOrders, parsedEventOrders = []) => {
       setOrders(parsedOrders)
       setEventOrders(parsedEventOrders)
-      await persist({ orders: parsedOrders, eventOrders: parsedEventOrders })
+      return persist({ orders: parsedOrders, eventOrders: parsedEventOrders })
     },
     [persist],
   )
@@ -175,7 +190,7 @@ export function DataProvider({ children }) {
   const uploadCancelReturns = useCallback(
     async (parsedCancelReturns) => {
       setCancelReturns(parsedCancelReturns)
-      await persist({ cancelReturns: parsedCancelReturns })
+      return persist({ cancelReturns: parsedCancelReturns })
     },
     [persist],
   )
@@ -199,26 +214,25 @@ export function DataProvider({ children }) {
   // 리뷰 파일(네이버 리뷰 관리 다운로드)에 등장하는 주문번호를
   // eventOrders와 대조해서, 일치하는 주문에 reviewWritten:true를 기록한다.
   // shippingInfo를 그대로 재사용한다 — 주문 id는 파일 전체 행 번호
-  // 기준이라 교재 주문/이벤트 주문 사이에 겹치지 않는다.
+  // 기준이라 교재 주문/이벤트 주문 사이에 겹치지 않는다. 저장 성공 여부를
+  // 그대로 반환한다(업로드 버튼에서 실패 시 다시 시도할 수 있도록).
   const uploadReviews = useCallback(
     async (reviewRecords) => {
       const reviewedOrderNumbers = new Set(reviewRecords.map((r) => r.orderNumber).filter(Boolean))
-      setShippingInfo((prev) => {
-        const next = { ...prev }
-        for (const order of eventOrders) {
-          if (order.orderNumber && reviewedOrderNumbers.has(order.orderNumber)) {
-            next[order.id] = {
-              ...(next[order.id] || {}),
-              reviewWritten: true,
-              reviewMatchedAt: new Date().toISOString(),
-            }
+      const next = { ...shippingInfo }
+      for (const order of eventOrders) {
+        if (order.orderNumber && reviewedOrderNumbers.has(order.orderNumber)) {
+          next[order.id] = {
+            ...(next[order.id] || {}),
+            reviewWritten: true,
+            reviewMatchedAt: new Date().toISOString(),
           }
         }
-        persist({ shippingInfo: next })
-        return next
-      })
+      }
+      setShippingInfo(next)
+      return persist({ shippingInfo: next })
     },
-    [persist, eventOrders],
+    [persist, eventOrders, shippingInfo],
   )
 
   const value = useMemo(

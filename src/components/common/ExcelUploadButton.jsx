@@ -9,6 +9,7 @@ export default function ExcelUploadButton({ label = '📄 파일로 정보입력
   const [parsing, setParsing] = useState(false)
   const [pending, setPending] = useState(null) // { fileName, records, meta }
   const [parseError, setParseError] = useState(null)
+  const [saving, setSaving] = useState(false)
 
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0]
@@ -42,12 +43,28 @@ export default function ExcelUploadButton({ label = '📄 파일로 정보입력
 
   const handleConfirm = async () => {
     if (!pending) return
-    // raw는 parseFn이 반환한 전체 결과다. 대부분의 화면은 records만 있으면
-    // 충분하지만(recordsKey로 뽑은 배열), 주문 파일처럼 여러 종류의 데이터를
-    // 한 번에 뽑아내는 경우(예: 교재 주문 + 네이버 이벤트 주문건) onImport가
-    // 필요한 나머지 값을 raw에서 꺼내 쓸 수 있게 함께 넘긴다.
-    await onImport(pending.records, pending.raw)
-    setPending(null)
+    setSaving(true)
+    try {
+      // raw는 parseFn이 반환한 전체 결과다. 대부분의 화면은 records만 있으면
+      // 충분하지만(recordsKey로 뽑은 배열), 주문 파일처럼 여러 종류의 데이터를
+      // 한 번에 뽑아내는 경우(예: 교재 주문 + 네이버 이벤트 주문건) onImport가
+      // 필요한 나머지 값을 raw에서 꺼내 쓸 수 있게 함께 넘긴다.
+      // onImport가 GitHub 저장 성공 여부(boolean)를 반환하면 그걸로 실제
+      // 저장까지 끝났는지 확인한다. 저장이 실패하면(false) 팝업을 닫지
+      // 않고 그대로 두어, 담당자가 "이대로 가져오기"를 다시 눌러 재시도할
+      // 수 있게 한다 — 그냥 닫아버리면 화면엔 반영됐지만 GitHub에는
+      // 저장되지 않아, 새로고침하면 방금 올린 내용이 사라진 것처럼 보인다.
+      const result = await onImport(pending.records, pending.raw)
+      if (result === false) {
+        window.alert(
+          '파일 내용은 화면에 반영됐지만, GitHub 저장에는 실패했습니다.\n상단의 오류 메시지를 확인하고 "이대로 가져오기"를 다시 눌러주세요. 저장에 성공하기 전까지는 새로고침하지 마세요.',
+        )
+        return
+      }
+      setPending(null)
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -72,6 +89,7 @@ export default function ExcelUploadButton({ label = '📄 파일로 정보입력
           recordLabel={recordLabel}
           onConfirm={handleConfirm}
           onCancel={() => setPending(null)}
+          confirming={saving}
         />
       )}
     </>

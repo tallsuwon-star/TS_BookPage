@@ -1,7 +1,7 @@
 import * as XLSX from 'xlsx'
 import './ColumnMappingPreview.css'
 
-export default function ColumnMappingPreview({ meta, fileName, recordLabel = '데이터', onConfirm, onCancel }) {
+export default function ColumnMappingPreview({ meta, fileName, recordLabel = '데이터', onConfirm, onCancel, confirming = false }) {
   const fieldDefs = meta.fieldDefs
 
   return (
@@ -50,11 +50,11 @@ export default function ColumnMappingPreview({ meta, fileName, recordLabel = '�
         </table>
 
         <div className="mapping-modal__actions">
-          <button type="button" className="btn btn--ghost" onClick={onCancel}>
+          <button type="button" className="btn btn--ghost" onClick={onCancel} disabled={confirming}>
             취소
           </button>
-          <button type="button" className="btn btn--primary" onClick={onConfirm}>
-            이대로 가져오기
+          <button type="button" className="btn btn--primary" onClick={onConfirm} disabled={confirming}>
+            {confirming ? '저장 중...' : '이대로 가져오기'}
           </button>
         </div>
       </div>
