@@ -1,10 +1,7 @@
 import { useState } from 'react'
 import OrderSidePanel from './OrderSidePanel'
+import { COURIERS } from '../../utils/couriers'
 import './InvoiceProcessPanel.css'
-
-// 실제 택배사 API 자동 연동(송장번호 자동 발급 등)은 이 프로젝트 범위 밖이라
-// 구현하지 않았다. 택배사/송장번호는 담당자가 직접 입력하는 수동 입력란이다.
-const COURIERS = ['CJ대한통운', '우체국택배', '롯데택배', '한진택배', '로젠택배']
 
 export default function InvoiceProcessPanel({ order, onSave, onClose }) {
   const [addressConfirmed, setAddressConfirmed] = useState(false)
@@ -42,7 +39,9 @@ export default function InvoiceProcessPanel({ order, onSave, onClose }) {
 
       <section className="order-panel__section">
         <h5>① 배송지 확인</h5>
-        <p className="order-panel__muted">수령인: {order.buyerName || '-'} / 주소: 비공개 (주소는 수집하지 않음)</p>
+        <p className="order-panel__muted">
+          수령인: {order.buyerName || '-'} / 연락처: {order.phone || '-'} / 주소: {order.address || '주소 정보 없음'}
+        </p>
         <p className="order-panel__notice">⚠ 오배송 방지를 위해 발송 전 반드시 원본 엑셀에서 실제 주소를 확인하세요.</p>
         <button type="button" className="btn btn--ghost" onClick={() => setAddressConfirmed(true)} disabled={addressConfirmed}>
           {addressConfirmed ? '확인 완료' : '배송지 확인'}

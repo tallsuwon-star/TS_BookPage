@@ -2,21 +2,27 @@ import Card from '../common/Card'
 import Badge from '../common/Badge'
 import { formatNumber } from '../../utils/format'
 import { formatDateDisplay } from '../../utils/dateUtils'
-import { getDeliveryStatusStyle, isShippedStatus, isCancelledStatus, normalizeChannel } from '../../utils/aggregation'
+import {
+  getDeliveryStatusStyle,
+  isShippedStatus,
+  isCancelledStatus,
+  isReturnCollectingStatus,
+  normalizeChannel,
+} from '../../utils/aggregation'
 import '../common/DataTable.css'
 
 // 주문자명/연락처/이메일 등은 이 목록 표에는 표시하지 않는다(각 행의
 // "송장처리"/"주문상세" 패널에서만 확인). 대신 몇 번째 주문인지 구분할 수
 // 있도록 순번(NO)만 매긴다.
-export default function OrderListTable({ orders, shippingInfo, onOpenInvoice, onOpenDetail }) {
+export default function OrderListTable({ orders, shippingInfo, onOpenInvoice, onOpenDetail, onOpenReturn }) {
   const total = orders.length
 
-  // 발송대기 건은 위쪽에, 발송중/발송완료/취소 건은 아래쪽에 모아서
+  // 발송대기 건은 위쪽에, 발송중/발송완료/취소/수거중 건은 아래쪽에 모아서
   // 처리해야 할 주문이 한눈에 보이게 한다. 같은 그룹 안에서는 원래 순서를
   // 그대로 유지한다.
   const rows = orders.map((order, idx) => {
     const shipping = shippingInfo[order.id]
-    const displayStatus = shipping?.status || order.deliveryStatus
+    const displayStatus = shipping?.returnStatus || shipping?.status || order.deliveryStatus
     return {
       order,
       no: total - idx,
@@ -24,13 +30,14 @@ export default function OrderListTable({ orders, shippingInfo, onOpenInvoice, on
       displayStatus,
       shipped: isShippedStatus(displayStatus),
       cancelled: isCancelledStatus(displayStatus),
+      returning: isReturnCollectingStatus(displayStatus),
       statusStyle: getDeliveryStatusStyle(displayStatus),
     }
   })
-  const pendingRows = rows.filter((r) => !r.shipped && !r.cancelled)
-  const doneRows = rows.filter((r) => r.shipped || r.cancelled)
+  const pendingRows = rows.filter((r) => !r.shipped && !r.cancelled && !r.returning)
+  const doneRows = rows.filter((r) => r.shipped || r.cancelled || r.returning)
 
-  const renderRow = ({ order, no, shipping, displayStatus, shipped, cancelled, statusStyle }) => (
+  const renderRow = ({ order, no, shipping, displayStatus, shipped, cancelled, returning, statusStyle }) => (
     <tr key={order.id}>
       <td>{no}</td>
       <td className="data-table__name">{order.productName}</td>
@@ -50,8 +57,12 @@ export default function OrderListTable({ orders, shippingInfo, onOpenInvoice, on
             <button type="button" className="btn btn--ghost btn--table-action" disabled>
               처리완료
             </button>
+          ) : returning ? (
+            <button type="button" className="btn btn--ghost btn--table-action" disabled>
+              수거중
+            </button>
           ) : shipped ? (
-            <button type="button" className="btn btn--ghost btn--table-action">
+            <button type="button" className="btn btn--ghost btn--table-action" onClick={() => onOpenReturn(order)}>
               반품신청
             </button>
           ) : (

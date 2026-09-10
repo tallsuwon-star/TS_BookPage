@@ -4,6 +4,7 @@ import OrderFilterBar from '../../components/orderManagement/OrderFilterBar'
 import OrderListTable from '../../components/orderManagement/OrderListTable'
 import InvoiceProcessPanel from '../../components/orderManagement/InvoiceProcessPanel'
 import OrderDetailView from '../../components/orderManagement/OrderDetailView'
+import ReturnRequestPanel from '../../components/orderManagement/ReturnRequestPanel'
 import { defaultDateRange } from '../../utils/dateUtils'
 import { CHANNEL_BUCKETS, filterOrders, getAllDeliveryStatuses } from '../../utils/aggregation'
 import '../DashboardPage/DashboardPage.css'
@@ -20,7 +21,7 @@ export default function OrderManagementPage() {
   const [channel, setChannel] = useState('all')
   const [deliveryStatus, setDeliveryStatus] = useState('all')
   const [search, setSearch] = useState('')
-  const [panel, setPanel] = useState(null) // { type: 'invoice' | 'detail', order } | null
+  const [panel, setPanel] = useState(null) // { type: 'invoice' | 'detail' | 'return', order } | null
 
   const channelOptions = CHANNEL_BUCKETS
   const deliveryStatusOptions = useMemo(() => getAllDeliveryStatuses(orders), [orders])
@@ -42,7 +43,7 @@ export default function OrderManagementPage() {
 
   return (
     <div className="dashboard-page">
-      <h1 className="page-title">교재 주문/재고관리</h1>
+      <h1 className="page-title">교재주문/재고관리</h1>
       <OrderFilterBar
         startDate={startDate}
         endDate={endDate}
@@ -65,6 +66,7 @@ export default function OrderManagementPage() {
             shippingInfo={shippingInfo}
             onOpenInvoice={(order) => setPanel({ type: 'invoice', order })}
             onOpenDetail={(order) => setPanel({ type: 'detail', order })}
+            onOpenReturn={(order) => setPanel({ type: 'return', order })}
           />
         </div>
 
@@ -81,6 +83,13 @@ export default function OrderManagementPage() {
             shipping={shippingInfo[panel.order.id]}
             onClose={() => setPanel(null)}
             onUpdateStatus={(status) => updateShippingInfo(panel.order.id, { status })}
+          />
+        )}
+        {panel?.type === 'return' && (
+          <ReturnRequestPanel
+            order={panel.order}
+            onClose={() => setPanel(null)}
+            onSave={(patch) => updateShippingInfo(panel.order.id, patch)}
           />
         )}
       </div>

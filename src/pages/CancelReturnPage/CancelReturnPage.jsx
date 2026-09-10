@@ -70,7 +70,7 @@ export default function CancelReturnPage() {
 
   return (
     <div className="dashboard-page">
-      <h1 className="page-title">주문 취소/반품 관리</h1>
+      <h1 className="page-title">주문취소/반품관리</h1>
       <CancelReturnFilterBar
         startDate={startDate}
         endDate={endDate}

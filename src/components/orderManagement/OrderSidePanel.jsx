@@ -4,8 +4,7 @@ import './OrderSidePanel.css'
 
 // ⚠️ 팀 확인 결과(2026-09-10) 실제 업로드하는 파일은 항상 사전에 가명·임의
 // 연락처로 치환해둔 파일이라 실제 회원 개인정보가 아니므로, 주문자명/이메일/
-// 연락처/주문번호를 마스킹 없이 그대로 표시한다. 배송지 주소는 애초에
-// 엑셀에서 읽어들이지 않으므로 여전히 비공개로 표시한다.
+// 연락처/주문번호/주소를 마스킹 없이 그대로 표시한다.
 export default function OrderSidePanel({ order, title, onClose, children }) {
   return (
     <aside className="order-panel">
@@ -29,6 +28,8 @@ export default function OrderSidePanel({ order, title, onClose, children }) {
           <dd>{order.email || '-'}</dd>
           <dt>연락처</dt>
           <dd>{order.phone || '-'}</dd>
+          <dt>주소</dt>
+          <dd>{order.address || '-'}</dd>
         </dl>
       </section>
 

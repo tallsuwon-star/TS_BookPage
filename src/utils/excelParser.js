@@ -135,10 +135,10 @@ async function parseGenericExcelFile(file, fieldDefs, buildRecord, extraFieldDef
   }
 }
 
-// ⚠️ 주문자명/연락처/이메일/주문번호는 팀에서 업로드하는 파일이 항상 사전에
-// 가명·임의값으로 치환되어 있다는 전제로 마스킹 없이 그대로 읽어들인다
-// (columnAliases.js의 ORDER_EXTRA_FIELD_DEFS 주석 참고). 실제 회원
-// 개인정보가 담긴 파일을 올리게 되는 시점이 오면 이 부분을 반드시
+// ⚠️ 주문자명/연락처/이메일/주문번호/주소는 팀에서 업로드하는 파일이 항상
+// 사전에 가명·임의값으로 치환되어 있다는 전제로 마스킹 없이 그대로
+// 읽어들인다(columnAliases.js의 ORDER_EXTRA_FIELD_DEFS 주석 참고). 실제
+// 회원 개인정보가 담긴 파일을 올리게 되는 시점이 오면 이 부분을 반드시
 // 다시 마스킹하거나 제거해야 한다.
 export async function parseOrderExcelFile(file) {
   let skippedNonTextbook = 0
@@ -169,6 +169,7 @@ export async function parseOrderExcelFile(file) {
         buyerName: String(get('buyerName') || '').trim(),
         phone: String(get('phone') || '').trim(),
         email: String(get('email') || '').trim(),
+        address: String(get('address') || '').trim(),
       }
     },
     ORDER_EXTRA_FIELD_DEFS,

@@ -1,0 +1,15 @@
+.address-search-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.address-search-field__row {
+  display: flex;
+  gap: 6px;
+}
+
+.address-search-field__row .field-input {
+  flex: 1;
+}

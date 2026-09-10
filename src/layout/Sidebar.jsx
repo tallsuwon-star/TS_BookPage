@@ -12,7 +12,7 @@ function findDefaultOpenKey(pathname) {
 
 export default function Sidebar() {
   const location = useLocation()
-  const [openKey, setOpenKey] = useState(() => findDefaultOpenKey(location.pathname) ?? 'book-dashboard')
+  const [openKey, setOpenKey] = useState(() => findDefaultOpenKey(location.pathname) ?? 'edu-product')
 
   return (
     <aside className="sidebar">

@@ -88,7 +88,7 @@ export default function DashboardPage() {
 
   return (
     <div className="dashboard-page">
-      <h1 className="page-title">교재주문 대시보드</h1>
+      <h1 className="page-title">교재 주문 대시보드</h1>
       <FilterBar
         startDate={startDate}
         endDate={endDate}

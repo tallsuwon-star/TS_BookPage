@@ -5,10 +5,18 @@ import { classifyBookCategory } from './columnAliases'
 // 포함 여부(includes) 기준으로 판정한다.
 const CANCELLED_KEYWORDS = ['취소', '반품', '교환', '환불']
 const SHIPPED_KEYWORDS = ['배송중', '배송완료', '구매확정', '발송완료', '배송지연', '발송중']
+// 반품 접수(수거) 진행 중인 상태. "반품"이라는 글자가 CANCELLED_KEYWORDS에도
+// 포함되어 있어, 순서상 반드시 취소 판정보다 먼저 확인해야 한다.
+const RETURN_COLLECTING_KEYWORDS = ['수거중']
 
 export function isCancelledStatus(status) {
   const str = String(status || '')
   return CANCELLED_KEYWORDS.some((k) => str.includes(k))
+}
+
+export function isReturnCollectingStatus(status) {
+  const str = String(status || '')
+  return RETURN_COLLECTING_KEYWORDS.some((k) => str.includes(k))
 }
 
 // '출고'된 것으로 간주할 주문: 취소/반품 건은 제외하고, 실제 배송이
@@ -20,8 +28,9 @@ export function isShippedStatus(status) {
 }
 
 // 배송상태를 한눈에 구분할 수 있도록 색을 입힌다: 발송대기(빨강) /
-// 발송중·발송완료(연두) / 취소·반품(회색).
+// 발송중·발송완료(연두) / 반품 수거중(보라) / 취소·반품접수완료(회색).
 export function getDeliveryStatusStyle(status) {
+  if (isReturnCollectingStatus(status)) return { color: '#7c3aed', bg: '#f5f3ff' }
   if (isCancelledStatus(status)) return { color: '#64748b', bg: '#f1f5f9' }
   if (isShippedStatus(status)) return { color: '#4d7c0f', bg: '#f7fee7' }
   return { color: '#dc2626', bg: '#fef2f2' }
@@ -143,9 +152,13 @@ export function getAllDeliveryStatuses(orders) {
 
 // --- 주문취소/반품관리 ---
 
+// 신청일(claimDate)이 파일에 없는 경우가 있는데, 이 값이 없다고 기간
+// 필터에서 제외해버리면 담당자가 처리해야 할 건이 화면에서 통째로 사라져
+// "연동이 안 되는" 것처럼 보인다. 신청일이 있는 건만 기간으로 걸러내고,
+// 없는 건은 항상 보여준다(담당자가 순차적으로 처리하면 되므로 문제 없음).
 export function filterCancelReturns(records, { startDate, endDate, claimType, channel } = {}) {
   return records.filter((r) => {
-    if (!isWithinRange(r.claimDate, startDate, endDate)) return false
+    if (r.claimDate && !isWithinRange(r.claimDate, startDate, endDate)) return false
     if (claimType && claimType !== 'all' && r.claimType !== claimType) return false
     if (channel && channel !== 'all' && normalizeChannel(r.channel) !== channel) return false
     return true

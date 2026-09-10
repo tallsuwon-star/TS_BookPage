@@ -2,8 +2,9 @@
 //
 // 실제 톡스 LMS 관리자 페이지의 전체 메뉴 구조를 그대로 옮겨왔다(화면 껍데기만).
 // 대부분의 하위 메뉴는 이 프로젝트 범위 밖의 기능이라 클릭해도 아무 동작을
-// 하지 않는 "표시용" 항목이며(path 없음), 실제로 동작하는 화면은 우리가 새로
-// 만든 "교재판매 / 재고 대시보드" 그룹 안의 3개 화면뿐이다.
+// 하지 않는 "표시용" 항목이며(path 없음), 실제로 동작하는 화면은 "교육상품관리"
+// 대메뉴의 "교재상품관리" 항목 아래에 있는 3개 화면(교재 주문 대시보드 /
+// 교재주문·재고관리 / 주문취소·반품관리)뿐이다.
 //
 // 새 화면을 실제로 추가할 때는: 해당 항목에 path를 넣고, App.jsx의 <Routes>에
 // 대응하는 <Route>를 등록하면 된다.
@@ -376,16 +377,6 @@ export const MENU_TREE = [
     ],
   },
   {
-    key: 'book-dashboard',
-    label: '교재상품 관리',
-    icon: '📚',
-    children: [
-      { key: 'payment-check', label: '교재주문 대시보드', path: '/payment-check' },
-      { key: 'order-management', label: '교재 주문/재고관리', path: '/order-management' },
-      { key: 'cancel-return', label: '주문 취소/반품 관리', path: '/cancel-return' },
-    ],
-  },
-  {
     key: 'edu-product',
     label: '교육상품관리',
     icon: '🗂️',
@@ -396,6 +387,10 @@ export const MENU_TREE = [
       { label: '추가 학습 상품 관리' },
       { label: 'M.E레벨관리' },
       { label: '교재상품관리' },
+      // 실제로 동작하는 화면 3개. "교재상품관리" 항목 바로 아래에 배치한다.
+      { key: 'payment-check', label: '교재 주문 대시보드', path: '/payment-check' },
+      { key: 'order-management', label: '교재주문/재고관리', path: '/order-management' },
+      { key: 'cancel-return', label: '주문취소/반품관리', path: '/cancel-return' },
       { label: '추가 결제 및 부분 환불 관리' },
       { label: '카드/실시간/무통장 결제확인 - 영구보관' },
       { label: '아이딕 잉글리쉬 상품관리' },
