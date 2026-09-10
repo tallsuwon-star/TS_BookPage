@@ -81,6 +81,14 @@
   ],
   "inventory": {},
   "cancelReturns": [],
-  "shippingInfo": {},
-  "updatedAt": "2026-09-10T01:56:44.784Z"
+  "shippingInfo": {
+    "row425-5": {
+      "courier": "CJ대한통운",
+      "trackingNumber": "123",
+      "status": "발송중",
+      "processedBy": "관리자",
+      "processedAt": "2026-09-10T01:57:25.273Z"
+    }
+  },
+  "updatedAt": "2026-09-10T01:57:25.273Z"
 }
