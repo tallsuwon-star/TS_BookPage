@@ -1,0 +1,155 @@
+{
+  "orders": [
+    {
+      "id": "row32-0",
+      "orderDate": "2026-07-16",
+      "productName": "토크스테이션 아이딕파닉스3 ( iDic PHONICS 3 )",
+      "quantity": 1,
+      "price": 18000,
+      "channel": "스마트스토어",
+      "deliveryStatus": "발송대기",
+      "orderNumber": "2026071614074641",
+      "buyerName": "김룰루",
+      "phone": "010-0000-0031",
+      "email": ""
+    },
+    {
+      "id": "row322-1",
+      "orderDate": "2026-09-01",
+      "productName": "토크스테이션 아이딕파닉스1 ( iDic PHONICS 1 )",
+      "quantity": 1,
+      "price": 18000,
+      "channel": "스마트스토어",
+      "deliveryStatus": "발송대기",
+      "orderNumber": "2026090198574251",
+      "buyerName": "김룰루",
+      "phone": "010-0000-0321",
+      "email": ""
+    },
+    {
+      "id": "row323-2",
+      "orderDate": "2026-09-01",
+      "productName": "[초등화상영어 토크스테이션] 아이딕보카 그림영단어장 3000",
+      "quantity": 1,
+      "price": 22000,
+      "channel": "스마트스토어",
+      "deliveryStatus": "발송대기",
+      "orderNumber": "2026090185002501",
+      "buyerName": "최랄라",
+      "phone": "010-0000-0322",
+      "email": ""
+    },
+    {
+      "id": "row374-3",
+      "orderDate": "2026-09-02",
+      "productName": "[초등화상영어 토크스테이션] 아이딕보카 그림영단어장 3000",
+      "quantity": 1,
+      "price": 22000,
+      "channel": "스마트스토어",
+      "deliveryStatus": "발송대기",
+      "orderNumber": "2026090246845521",
+      "buyerName": "정토크",
+      "phone": "010-0000-0373",
+      "email": ""
+    },
+    {
+      "id": "row424-4",
+      "orderDate": "2026-09-07",
+      "productName": "토크스테이션 아이딕파닉스2 ( iDic PHONICS 2 )",
+      "quantity": 1,
+      "price": 18000,
+      "channel": "스마트스토어",
+      "deliveryStatus": "발송대기",
+      "orderNumber": "2026090767770421",
+      "buyerName": "정토크",
+      "phone": "010-0000-0423",
+      "email": ""
+    },
+    {
+      "id": "row425-5",
+      "orderDate": "2026-09-07",
+      "productName": "토크스테이션 아이딕파닉스3 ( iDic PHONICS 3 )",
+      "quantity": 1,
+      "price": 18000,
+      "channel": "스마트스토어",
+      "deliveryStatus": "발송대기",
+      "orderNumber": "2026090767770421",
+      "buyerName": "이스테",
+      "phone": "010-0000-0424",
+      "email": ""
+    }
+  ],
+  "inventory": {},
+  "cancelReturns": [
+    {
+      "id": "cr-row32-0",
+      "claimDate": "",
+      "productName": "토크스테이션 아이딕파닉스3 ( iDic PHONICS 3 )",
+      "quantity": 1,
+      "claimType": "기타",
+      "reason": "",
+      "status": "",
+      "channel": "스마트스토어"
+    },
+    {
+      "id": "cr-row322-1",
+      "claimDate": "",
+      "productName": "토크스테이션 아이딕파닉스1 ( iDic PHONICS 1 )",
+      "quantity": 1,
+      "claimType": "기타",
+      "reason": "",
+      "status": "",
+      "channel": "스마트스토어"
+    },
+    {
+      "id": "cr-row323-2",
+      "claimDate": "",
+      "productName": "[초등화상영어 토크스테이션] 아이딕보카 그림영단어장 3000",
+      "quantity": 1,
+      "claimType": "기타",
+      "reason": "",
+      "status": "",
+      "channel": "스마트스토어"
+    },
+    {
+      "id": "cr-row374-3",
+      "claimDate": "",
+      "productName": "[초등화상영어 토크스테이션] 아이딕보카 그림영단어장 3000",
+      "quantity": 1,
+      "claimType": "기타",
+      "reason": "",
+      "status": "",
+      "channel": "스마트스토어"
+    },
+    {
+      "id": "cr-row424-4",
+      "claimDate": "",
+      "productName": "토크스테이션 아이딕파닉스2 ( iDic PHONICS 2 )",
+      "quantity": 1,
+      "claimType": "기타",
+      "reason": "",
+      "status": "",
+      "channel": "스마트스토어"
+    },
+    {
+      "id": "cr-row425-5",
+      "claimDate": "",
+      "productName": "토크스테이션 아이딕파닉스3 ( iDic PHONICS 3 )",
+      "quantity": 1,
+      "claimType": "기타",
+      "reason": "",
+      "status": "",
+      "channel": "스마트스토어"
+    }
+  ],
+  "shippingInfo": {
+    "row425-5": {
+      "courier": "CJ대한통운",
+      "trackingNumber": "123",
+      "status": "발송중",
+      "processedBy": "관리자",
+      "processedAt": "2026-09-10T01:57:25.273Z"
+    }
+  },
+  "updatedAt": "2026-09-10T02:00:04.347Z"
+}
