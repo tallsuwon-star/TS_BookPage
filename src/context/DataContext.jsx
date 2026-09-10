@@ -15,6 +15,12 @@ export function DataProvider({ children }) {
   const [lastSyncedAt, setLastSyncedAt] = useState(null)
   const configured = useMemo(() => isGithubStorageConfigured(), [])
   const mounted = useRef(true)
+  // 저장 요청을 한 번에 하나씩만 실행하기 위한 대기열. "일괄 발송처리"처럼
+  // 같은 화면에서 저장 함수를 연달아 여러 번 호출하면, 이전 저장이 끝나기
+  // 전에 다음 저장이 같은 sha로 PUT을 보내면서 GitHub Contents API가 409로
+  // 거부한다(낙관적 동시성 제어). 저장을 이 대기열에 태워 순서대로 하나씩
+  // 실행하면 매번 최신 sha로 저장하게 되어 자기 자신과 충돌하지 않는다.
+  const persistQueue = useRef(Promise.resolve())
 
   useEffect(() => {
     mounted.current = true
@@ -53,33 +59,44 @@ export function DataProvider({ children }) {
   }, [loadRemote])
 
   // nextState에 orders/inventory/cancelReturns 중 바뀐 것만 넘기면 되고,
-  // 나머지는 현재 값을 그대로 사용해 저장한다.
+  // 나머지는 현재 값을 그대로 사용해 저장한다. 실제 저장은 persistQueue에
+  // 태워 이전 저장이 끝난 뒤에 실행되도록 순서를 보장한다.
   const persist = useCallback(
-    async (nextState) => {
-      if (!configured) {
-        setError('GitHub 연동이 설정되지 않아 저장할 수 없습니다. .env 파일을 확인해주세요.')
-        return false
+    (nextState) => {
+      const run = async () => {
+        if (!configured) {
+          setError('GitHub 연동이 설정되지 않아 저장할 수 없습니다. .env 파일을 확인해주세요.')
+          return false
+        }
+        setSyncing(true)
+        setError(null)
+        try {
+          const saved = await saveRemoteData({
+            orders: nextState.orders ?? orders,
+            inventory: nextState.inventory ?? inventory,
+            cancelReturns: nextState.cancelReturns ?? cancelReturns,
+            shippingInfo: nextState.shippingInfo ?? shippingInfo,
+            eventOrders: nextState.eventOrders ?? eventOrders,
+          })
+          if (!mounted.current) return true
+          setLastSyncedAt(saved.updatedAt)
+          return true
+        } catch (err) {
+          if (!mounted.current) return false
+          setError(err.message || String(err))
+          return false
+        } finally {
+          if (mounted.current) setSyncing(false)
+        }
       }
-      setSyncing(true)
-      setError(null)
-      try {
-        const saved = await saveRemoteData({
-          orders: nextState.orders ?? orders,
-          inventory: nextState.inventory ?? inventory,
-          cancelReturns: nextState.cancelReturns ?? cancelReturns,
-          shippingInfo: nextState.shippingInfo ?? shippingInfo,
-          eventOrders: nextState.eventOrders ?? eventOrders,
-        })
-        if (!mounted.current) return true
-        setLastSyncedAt(saved.updatedAt)
-        return true
-      } catch (err) {
-        if (!mounted.current) return false
-        setError(err.message || String(err))
-        return false
-      } finally {
-        if (mounted.current) setSyncing(false)
-      }
+      const result = persistQueue.current.then(run)
+      // 이전 저장이 실패해도 대기열 자체는 끊기지 않고 다음 저장을 계속
+      // 진행해야 하므로, 대기열에 남기는 프라미스는 항상 성공으로 처리한다.
+      persistQueue.current = result.then(
+        () => {},
+        () => {},
+      )
+      return result
     },
     [configured, orders, inventory, cancelReturns, shippingInfo, eventOrders],
   )

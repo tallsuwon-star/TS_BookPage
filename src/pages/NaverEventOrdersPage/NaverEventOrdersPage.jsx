@@ -8,6 +8,7 @@ import { parseReviewExcelFile } from '../../utils/excelParser'
 import { groupEventOrdersByType } from '../../utils/aggregation'
 import '../../components/common/DataTable.css'
 import '../DashboardPage/DashboardPage.css'
+import '../OrderManagementPage/OrderManagementPage.css'
 
 // 발주발송관리 파일에 함께 섞여 내려오는, 교재가 아닌 이벤트성 주문(화상영어
 // 체험권, 3+1 이벤트, 10원 이벤트 등)을 확인하는 화면. "교재 주문/재고관리"
@@ -60,27 +61,31 @@ export default function NaverEventOrdersPage() {
         />
       </div>
 
-      <Card title="유형별 주문 현황" className="data-table-card">
-        {groups.length === 0 ? (
-          <p className="data-table__empty">표시할 이벤트 주문이 없습니다. 주문 파일을 올리면 자동으로 채워집니다.</p>
-        ) : (
-          groups.map((group, idx) => (
-            <EventTypeAccordion
-              key={group.type}
-              type={group.type}
-              orders={group.orders}
-              shippingInfo={shippingInfo}
-              count={group.count}
-              defaultOpen={idx === 0}
-              onOpenDetail={setDetailOrder}
-              onBulkProcess={handleBulkProcess}
-            />
-          ))
-        )}
-      </Card>
+      <div className="order-management__body">
+        <div className="order-management__table">
+          <Card title="유형별 주문 현황" className="data-table-card">
+            {groups.length === 0 ? (
+              <p className="data-table__empty">
+                표시할 이벤트 주문이 없습니다. 주문 파일을 올리면 자동으로 채워집니다.
+              </p>
+            ) : (
+              groups.map((group, idx) => (
+                <EventTypeAccordion
+                  key={group.type}
+                  type={group.type}
+                  orders={group.orders}
+                  shippingInfo={shippingInfo}
+                  count={group.count}
+                  defaultOpen={idx === 0}
+                  onOpenDetail={setDetailOrder}
+                  onBulkProcess={handleBulkProcess}
+                />
+              ))
+            )}
+          </Card>
+        </div>
 
-      {detailOrder && (
-        <div className="detail-panel-row">
+        {detailOrder && (
           <EventOrderDetailView
             order={detailOrder}
             shipping={shippingInfo[detailOrder.id]}
@@ -90,8 +95,8 @@ export default function NaverEventOrdersPage() {
             }}
             onClose={() => setDetailOrder(null)}
           />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }
