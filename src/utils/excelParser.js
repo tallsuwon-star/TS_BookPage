@@ -140,22 +140,18 @@ async function parseGenericExcelFile(file, fieldDefs, buildRecord, extraFieldDef
 // 읽어들인다(columnAliases.js의 ORDER_EXTRA_FIELD_DEFS 주석 참고). 실제
 // 회원 개인정보가 담긴 파일을 올리게 되는 시점이 오면 이 부분을 반드시
 // 다시 마스킹하거나 제거해야 한다.
+// 발주발송관리 파일에는 화상영어 수강권, 10원 체험/3+1 이벤트 등 교재가
+// 아닌 상품 주문도 함께 섞여 내려온다. 예전에는 이런 행을 파싱 단계에서
+// 그냥 버렸지만, "네이버 이벤트 주문건" 화면에서 확인할 수 있어야 해서
+// 이제는 버리지 않고 isTextbook 여부로 나눠 둘 다 반환한다. "교재상품
+// 결제확인" 등 교재 집계 화면은 여전히 orders(교재)만 사용한다.
 export async function parseOrderExcelFile(file) {
-  let skippedNonTextbook = 0
   const { records, meta } = await parseGenericExcelFile(
     file,
     FIELD_DEFS,
     (get, r, i) => {
       const productName = String(get('productName') || '').trim()
       if (!productName) return null // 합계/공백 행 등 상품명이 없는 행은 제외
-
-      // 발주발송관리 파일에는 화상영어 수강권, 10원 체험/3+1 이벤트 등
-      // 교재가 아닌 상품 주문도 함께 섞여 내려온다. 상품명에 교재 키워드가
-      // 없으면 "교재상품 결제확인" 집계 대상에서 제외한다.
-      if (!isTextbookProduct(productName)) {
-        skippedNonTextbook += 1
-        return null
-      }
 
       return {
         id: `row${r}-${i}`,
@@ -170,11 +166,17 @@ export async function parseOrderExcelFile(file) {
         phone: String(get('phone') || '').trim(),
         email: String(get('email') || '').trim(),
         address: String(get('address') || '').trim(),
+        // 네이버 시트에 팀에서 직접 계산해 둔 "구분"(3+1/10원/기타 등) 값이
+        // 있으면 그대로 가져온다. 없어도 상관없는 선택 항목이다.
+        eventType: String(get('eventType') || '').trim(),
+        isTextbook: isTextbookProduct(productName),
       }
     },
     ORDER_EXTRA_FIELD_DEFS,
   )
-  return { orders: records, meta: { ...meta, skippedNonTextbook } }
+  const orders = records.filter((r) => r.isTextbook)
+  const eventOrders = records.filter((r) => !r.isTextbook)
+  return { orders, eventOrders, meta: { ...meta, skippedNonTextbook: eventOrders.length } }
 }
 
 // 네이버 "취소/반품/교환 관리" 다운로드 파일용 파서.

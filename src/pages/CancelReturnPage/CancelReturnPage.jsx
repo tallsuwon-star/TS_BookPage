@@ -4,6 +4,7 @@ import CancelReturnFilterBar from '../../components/cancelReturn/CancelReturnFil
 import CancelReturnSummaryCards from '../../components/cancelReturn/CancelReturnSummaryCards'
 import CancelReturnRankingTable from '../../components/cancelReturn/CancelReturnRankingTable'
 import CancelReturnListTable from '../../components/cancelReturn/CancelReturnListTable'
+import CancelReturnDetailView from '../../components/cancelReturn/CancelReturnDetailView'
 import { defaultDateRange } from '../../utils/dateUtils'
 import {
   aggregateCancelReturnsByBook,
@@ -16,6 +17,7 @@ import {
 } from '../../utils/aggregation'
 import { exportCancelReturnsToExcel } from '../../utils/exportExcel'
 import '../DashboardPage/DashboardPage.css'
+import './CancelReturnPage.css'
 
 export default function CancelReturnPage() {
   const { orders, cancelReturns, resetCancelReturns, loading } = useData()
@@ -25,6 +27,7 @@ export default function CancelReturnPage() {
   const [claimType, setClaimType] = useState('all')
   const [channel, setChannel] = useState('all')
   const [search, setSearch] = useState('')
+  const [detailRecord, setDetailRecord] = useState(null)
 
   // "주문취소/반품관리" 전용 파일로 올린 내역 + 발주발송관리(주문) 파일의
   // 배송상태에 "취소"가 찍혀 자동으로 감지된 내역을 합쳐서 보여준다.
@@ -94,8 +97,19 @@ export default function CancelReturnPage() {
 
       <div className="dashboard-page__tables">
         <CancelReturnRankingTable books={books} />
-        <CancelReturnListTable records={searchedRecords} search={search} onSearchChange={setSearch} />
+        <CancelReturnListTable
+          records={searchedRecords}
+          search={search}
+          onSearchChange={setSearch}
+          onOpenDetail={setDetailRecord}
+        />
       </div>
+
+      {detailRecord && (
+        <div className="cancel-return__detail-row">
+          <CancelReturnDetailView record={detailRecord} onClose={() => setDetailRecord(null)} />
+        </div>
+      )}
     </div>
   )
 }

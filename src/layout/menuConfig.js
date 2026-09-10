@@ -391,6 +391,7 @@ export const MENU_TREE = [
       { key: 'payment-check', label: '교재 주문 대시보드', path: '/payment-check' },
       { key: 'order-management', label: '교재주문/재고관리', path: '/order-management' },
       { key: 'cancel-return', label: '주문취소/반품관리', path: '/cancel-return' },
+      { key: 'naver-events', label: '네이버 이벤트 주문건', path: '/naver-events' },
       { label: '추가 결제 및 부분 환불 관리' },
       { label: '카드/실시간/무통장 결제확인 - 영구보관' },
       { label: '아이딕 잉글리쉬 상품관리' },

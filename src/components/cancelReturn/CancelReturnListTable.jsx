@@ -13,7 +13,7 @@ const TYPE_COLORS = {
 }
 const DEFAULT_COLOR = { color: '#475569', bg: '#f1f5f9' }
 
-export default function CancelReturnListTable({ records, search, onSearchChange }) {
+export default function CancelReturnListTable({ records, search, onSearchChange, onOpenDetail }) {
   // 처리상태가 "완료"류가 아닌(=아직 처리 안 된) 건을 위쪽에 남기고,
   // 처리된 건은 아래로 내린다. 담당자가 매일 처리상태를 확인하므로
   // 처리상태 값 자체가 없어도(빈 값 = 미처리로 간주) 문제없다.
@@ -38,12 +38,13 @@ export default function CancelReturnListTable({ records, search, onSearchChange 
               <th>사유</th>
               <th>처리상태</th>
               <th>판매채널</th>
+              <th>관리</th>
             </tr>
           </thead>
           <tbody>
             {records.length === 0 && (
               <tr>
-                <td colSpan={7} className="data-table__empty">
+                <td colSpan={8} className="data-table__empty">
                   표시할 취소/반품 내역이 없습니다.
                 </td>
               </tr>
@@ -62,6 +63,11 @@ export default function CancelReturnListTable({ records, search, onSearchChange 
                   <td className="data-table__name">{r.reason || '-'}</td>
                   <td>{r.status || '-'}</td>
                   <td>{r.channel ? normalizeChannel(r.channel) : '-'}</td>
+                  <td>
+                    <button type="button" className="btn btn--ghost btn--table-action" onClick={() => onOpenDetail(r)}>
+                      요청상세
+                    </button>
+                  </td>
                 </tr>
               )
             })}

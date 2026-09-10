@@ -1,5 +1,5 @@
 import { isWithinRange } from './dateUtils'
-import { classifyBookCategory } from './columnAliases'
+import { classifyBookCategory, classifyEventType } from './columnAliases'
 
 // 네이버 배송상태 값은 셀러 설정에 따라 조금씩 다르게 표기될 수 있어
 // 포함 여부(includes) 기준으로 판정한다.
@@ -241,4 +241,20 @@ export function extractCancelledFromOrders(orders) {
       channel: order.channel,
       source: 'order-file',
     }))
+}
+
+// --- 네이버 이벤트 주문건 (3+1/10원 체험 등 교재가 아닌 주문) ---
+
+// "구분" 값(3+1/10원/기타/중복 등) 기준으로 묶어서, 화면에서 유형별로
+// 아코디언을 펼치면 해당 유형의 주문만 나열할 수 있게 한다.
+export function groupEventOrdersByType(eventOrders) {
+  const map = new Map()
+  for (const order of eventOrders) {
+    const type = classifyEventType(order.eventType)
+    if (!map.has(type)) map.set(type, [])
+    map.get(type).push(order)
+  }
+  return Array.from(map.entries())
+    .map(([type, orders]) => ({ type, orders, count: orders.length }))
+    .sort((a, b) => b.count - a.count)
 }

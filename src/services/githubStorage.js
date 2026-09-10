@@ -18,7 +18,14 @@ const BRANCH = import.meta.env.VITE_GITHUB_BRANCH || 'main'
 const TOKEN = import.meta.env.VITE_GITHUB_TOKEN
 const DATA_PATH = import.meta.env.VITE_DATA_FILE_PATH || 'data.json'
 
-export const EMPTY_DATA = { orders: [], inventory: {}, cancelReturns: [], shippingInfo: {}, updatedAt: null }
+export const EMPTY_DATA = {
+  orders: [],
+  inventory: {},
+  cancelReturns: [],
+  shippingInfo: {},
+  eventOrders: [],
+  updatedAt: null,
+}
 
 export function isGithubStorageConfigured() {
   return Boolean(OWNER && REPO && TOKEN)
@@ -66,6 +73,7 @@ export async function fetchRemoteData() {
       inventory: json.inventory && typeof json.inventory === 'object' ? json.inventory : {},
       cancelReturns: Array.isArray(json.cancelReturns) ? json.cancelReturns : [],
       shippingInfo: json.shippingInfo && typeof json.shippingInfo === 'object' ? json.shippingInfo : {},
+      eventOrders: Array.isArray(json.eventOrders) ? json.eventOrders : [],
       updatedAt: json.updatedAt || null,
     }
   } catch {
@@ -92,13 +100,14 @@ async function getFileSha() {
 // 다시 받아와 그대로 재시도하면 대부분 해결되므로 몇 차례 자동 재시도한다.
 const SAVE_RETRY_COUNT = 3
 
-export async function saveRemoteData({ orders, inventory, cancelReturns, shippingInfo }) {
+export async function saveRemoteData({ orders, inventory, cancelReturns, shippingInfo, eventOrders }) {
   assertConfigured()
   const payload = {
     orders: orders || [],
     inventory: inventory || {},
     cancelReturns: cancelReturns || [],
     shippingInfo: shippingInfo || {},
+    eventOrders: eventOrders || [],
     updatedAt: new Date().toISOString(),
   }
   const content = utf8ToBase64(JSON.stringify(payload, null, 2))

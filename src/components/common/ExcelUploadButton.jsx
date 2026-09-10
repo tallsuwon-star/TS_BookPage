@@ -32,7 +32,7 @@ export default function ExcelUploadButton({ label = '📄 파일로 정보입력
       if (meta.missingFields.length > 0) {
         setParseError(`다음 항목의 열을 찾을 수 없습니다: ${meta.missingFields.join(', ')}`)
       }
-      setPending({ fileName: file.name, records, meta })
+      setPending({ fileName: file.name, records, meta, raw: result })
     } catch (err) {
       setParseError(err.message || String(err))
     } finally {
@@ -42,7 +42,11 @@ export default function ExcelUploadButton({ label = '📄 파일로 정보입력
 
   const handleConfirm = async () => {
     if (!pending) return
-    await onImport(pending.records)
+    // raw는 parseFn이 반환한 전체 결과다. 대부분의 화면은 records만 있으면
+    // 충분하지만(recordsKey로 뽑은 배열), 주문 파일처럼 여러 종류의 데이터를
+    // 한 번에 뽑아내는 경우(예: 교재 주문 + 네이버 이벤트 주문건) onImport가
+    // 필요한 나머지 값을 raw에서 꺼내 쓸 수 있게 함께 넘긴다.
+    await onImport(pending.records, pending.raw)
     setPending(null)
   }
 

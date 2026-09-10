@@ -8,6 +8,7 @@ export function DataProvider({ children }) {
   const [inventory, setInventory] = useState({})
   const [cancelReturns, setCancelReturns] = useState([])
   const [shippingInfo, setShippingInfo] = useState({})
+  const [eventOrders, setEventOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [syncing, setSyncing] = useState(false)
   const [error, setError] = useState(null)
@@ -37,6 +38,7 @@ export function DataProvider({ children }) {
       setInventory(data.inventory)
       setCancelReturns(data.cancelReturns)
       setShippingInfo(data.shippingInfo)
+      setEventOrders(data.eventOrders)
       setLastSyncedAt(data.updatedAt)
     } catch (err) {
       if (!mounted.current) return
@@ -66,6 +68,7 @@ export function DataProvider({ children }) {
           inventory: nextState.inventory ?? inventory,
           cancelReturns: nextState.cancelReturns ?? cancelReturns,
           shippingInfo: nextState.shippingInfo ?? shippingInfo,
+          eventOrders: nextState.eventOrders ?? eventOrders,
         })
         if (!mounted.current) return true
         setLastSyncedAt(saved.updatedAt)
@@ -78,13 +81,17 @@ export function DataProvider({ children }) {
         if (mounted.current) setSyncing(false)
       }
     },
-    [configured, orders, inventory, cancelReturns, shippingInfo],
+    [configured, orders, inventory, cancelReturns, shippingInfo, eventOrders],
   )
 
+  // parsedEventOrders는 같은 주문 파일에서 교재가 아닌 상품(3+1/10원 이벤트
+  // 등)으로 분류된 행들이다. "네이버 이벤트 주문건" 화면에서 확인할 수
+  // 있도록 orders와 함께 한 번에 저장한다.
   const uploadOrders = useCallback(
-    async (parsedOrders) => {
+    async (parsedOrders, parsedEventOrders = []) => {
       setOrders(parsedOrders)
-      await persist({ orders: parsedOrders })
+      setEventOrders(parsedEventOrders)
+      await persist({ orders: parsedOrders, eventOrders: parsedEventOrders })
     },
     [persist],
   )
@@ -144,7 +151,8 @@ export function DataProvider({ children }) {
   const resetData = useCallback(async () => {
     setOrders([])
     setInventory({})
-    await persist({ orders: EMPTY_DATA.orders, inventory: EMPTY_DATA.inventory })
+    setEventOrders([])
+    await persist({ orders: EMPTY_DATA.orders, inventory: EMPTY_DATA.inventory, eventOrders: EMPTY_DATA.eventOrders })
   }, [persist])
 
   const uploadCancelReturns = useCallback(
@@ -177,6 +185,7 @@ export function DataProvider({ children }) {
       inventory,
       cancelReturns,
       shippingInfo,
+      eventOrders,
       loading,
       syncing,
       error,
@@ -198,6 +207,7 @@ export function DataProvider({ children }) {
       inventory,
       cancelReturns,
       shippingInfo,
+      eventOrders,
       loading,
       syncing,
       error,

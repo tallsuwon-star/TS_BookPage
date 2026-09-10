@@ -82,7 +82,7 @@ export default function OrderFilterBar({
           recordLabel="주문"
           recordsKey="orders"
           parseFn={parseOrderExcelFile}
-          onImport={uploadOrders}
+          onImport={(orders, raw) => uploadOrders(orders, raw?.eventOrders)}
         />
       </div>
     </div>

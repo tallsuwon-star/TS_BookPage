@@ -31,6 +31,10 @@ export const ORDER_EXTRA_FIELD_DEFS = [
     label: '주소',
     aliases: ['통합배송지', '배송지', '수취인주소', '기본배송지', '배송지주소', '주소'],
   },
+  // 팀에서 발주발송관리 시트에 직접 "구분"이라는 열을 추가해 3+1/10원/기타
+  // 이벤트 여부를 미리 계산해 두는 경우가 있다. 있으면 그 값을 그대로 가져와
+  // "네이버 이벤트 주문건" 화면에서 묶어 보여주는 데 쓴다(classifyEventType 참고).
+  { key: 'eventType', label: '구분(이벤트유형)', aliases: ['구분'] },
 ]
 
 // 발주발송관리 원본은 A~BK, 즉 63개 열까지가 실제 데이터다.
@@ -54,13 +58,22 @@ export const CANCEL_RETURN_FIELD_DEFS = [
 // 네이버 발주발송관리 파일에는 교재(책) 주문뿐 아니라 화상영어 수강권,
 // 체험 이벤트(예: 10원 체험, 3+1 이벤트) 등 전혀 다른 상품이 섞여서 내려온다.
 // "교재상품 결제확인" 화면에는 실제 교재 주문만 집계되어야 하므로, 상품명에
-// 아래 키워드가 포함된 행만 "교재 주문"으로 인정하고 나머지는 파싱 단계에서
-// 제외한다. 새 교재 시리즈가 나오면 이 배열에 키워드만 추가하면 된다.
+// 아래 키워드가 포함된 행만 "교재 주문"으로 인정한다. 나머지(교재가 아닌
+// 행)는 이제 버리지 않고 "네이버 이벤트 주문건" 화면에서 확인할 수 있다.
+// 새 교재 시리즈가 나오면 이 배열에 키워드만 추가하면 된다.
 export const TEXTBOOK_NAME_KEYWORDS = ['idic', '아이딕', '파닉스', 'phonics', 'explorer', '익스플로러', '보카킹']
 
 export function isTextbookProduct(productName) {
   const name = String(productName || '').toLowerCase()
   return TEXTBOOK_NAME_KEYWORDS.some((keyword) => name.includes(keyword.toLowerCase()))
+}
+
+// 교재가 아닌 주문(네이버 이벤트 주문건)을 "구분" 값 기준으로 묶어서 보여줄
+// 때 쓰는 분류. 팀이 시트에 미리 계산해 둔 값(예: "3+1", "10원", "기타",
+// "중복")을 그대로 쓰고, 그 열이 없거나 비어 있으면 "미분류"로 묶는다.
+export function classifyEventType(rawEventType) {
+  const raw = String(rawEventType || '').trim()
+  return raw || '미분류'
 }
 
 // "교재구분" 필터를 상품명 기준으로 자동 분류한다. 예전에는 재고 표에서

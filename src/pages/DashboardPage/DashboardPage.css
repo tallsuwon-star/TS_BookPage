@@ -12,6 +12,13 @@
   font-size: 14px;
 }
 
+.dashboard-page__desc {
+  margin: -8px 0 16px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
 .dashboard-page__cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));

@@ -123,13 +123,15 @@ API)를 직접 호출해 파일을 읽고 쓰기 때문에, 다음 사항을 반
 ```
 src/
   main.jsx, App.jsx           앱 진입점 / 라우팅 정의
-                               (/payment-check, /order-management, /cancel-return)
+                               (/payment-check, /order-management, /cancel-return,
+                               /naver-events)
   index.css                   전역 디자인 토큰 & 공통 버튼/폼 스타일
   layout/                     AppLayout, Sidebar, 사이드바 메뉴 설정(menuConfig.js)
   pages/
     DashboardPage/            "교재 주문 대시보드" 화면 (기간별 집계)
     OrderManagementPage/      "교재주문/재고관리" 화면 (주문 원장 목록)
     CancelReturnPage/         "주문취소/반품관리" 화면
+    NaverEventOrdersPage/     "네이버 이벤트 주문건" 화면 (3+1/10원 이벤트 등)
   components/
     common/                   Card, Badge, SearchInput, ExcelUploadButton,
                                ColumnMappingPreview, AddressSearchField(주소 검색
@@ -139,15 +141,18 @@ src/
                                현재재고 입력/망실처리 모달 등)
     orderManagement/          교재 주문/재고관리 화면 전용 조각 (필터바, 원장 표,
                                송장처리/주문상세/반품접수 패널)
-    cancelReturn/             취소/반품관리 화면 전용 조각
+    cancelReturn/             취소/반품관리 화면 전용 조각 (요청상세 패널 포함)
+    naverEvents/              네이버 이벤트 주문건 화면 전용 조각 (유형별 아코디언)
   context/
-    DataContext.jsx           orders/inventory/cancelReturns 전역 상태 + GitHub 동기화 액션
+    DataContext.jsx           orders/inventory/cancelReturns/eventOrders 전역 상태
+                               + GitHub 동기화 액션
   services/
     githubStorage.js          GitHub Contents API 읽기/쓰기 (data.json)
   utils/
     excelParser.js            엑셀 파싱 공통 파이프라인 (컬럼 자동 인식 + R열 폴백)
     columnAliases.js          주문/취소반품 각각의 필드-헤더 별칭 정의
-    aggregation.js             기간/채널/구분 필터링, 집계, 정렬 로직 (주문 + 취소반품)
+    aggregation.js             기간/채널/구분 필터링, 집계, 정렬 로직 (주문 + 취소반품
+                               + 네이버 이벤트 주문건)
     inventoryStatus.js         재고상태(정상/주의/재고부족) 판정 규칙
     couriers.js                송장처리/반품접수 화면이 공유하는 택배사 목록
     dateUtils.js, format.js    날짜/숫자 포맷 유틸
@@ -156,7 +161,7 @@ src/
 
 새 화면을 추가할 때는 `pages/`에 폴더를 만들고, `App.jsx`의 `<Routes>`와
 `layout/menuConfig.js`에 등록하면 사이드바에 자동으로 노출됩니다. 실제로
-동작하는 3개 화면은 사이드바 "교육상품관리" 대메뉴의 "교재상품관리"(표시용
+동작하는 4개 화면은 사이드바 "교육상품관리" 대메뉴의 "교재상품관리"(표시용
 항목) 바로 아래에 위치합니다 — 별도의 대메뉴를 새로 만들지 않고, 실제 톡스
 LMS 관리자 페이지에 있는 기존 메뉴 위치에 자연스럽게 끼워 넣은 것입니다.
 
@@ -217,6 +222,19 @@ LMS 관리자 페이지에 있는 기존 메뉴 위치에 자연스럽게 끼워
       "channel": "스마트스토어"
     }
   ],
+  "eventOrders": [
+    {
+      "id": "row5-0",
+      "orderDate": "2026-09-01",
+      "productName": "화상영어 수강권 원어민 어린이 초등 영어",
+      "quantity": 1,
+      "price": 30000,
+      "channel": "스마트스토어",
+      "deliveryStatus": "발송대기",
+      "buyerName": "김룰루",
+      "eventType": "3+1"
+    }
+  ],
   "updatedAt": "2026-09-09T00:00:00.000Z"
 }
 ```
@@ -225,6 +243,15 @@ LMS 관리자 페이지에 있는 기존 메뉴 위치에 자연스럽게 끼워
   교체**됩니다. (여러 파일을 누적/병합하는 기능은 이번 범위에 없습니다.
   항상 최신 다운로드 파일 전체를 업로드해주세요.) 두 배열은 서로 독립적이라
   한쪽을 업로드/초기화해도 다른 쪽 데이터에는 영향이 없습니다.
+- `eventOrders`는 주문 파일(발주발송관리)에서 **교재가 아니라고 판정된
+  행**(화상영어 체험권, 3+1 이벤트, 10원 이벤트 등)입니다. 예전에는 이런
+  행을 파싱 단계에서 그냥 버렸지만, 이제는 "네이버 이벤트 주문건" 화면에서
+  볼 수 있도록 별도로 저장합니다. `orders`를 업로드하는 것과 완전히 같은
+  파일·같은 클릭 한 번으로 `orders`(교재)/`eventOrders`(비교재)가 동시에
+  갱신되므로 별도 업로드는 필요 없습니다. `eventType`은 팀이 시트에 미리
+  계산해 둔 "구분" 열 값(예: "3+1", "10원", "기타", "중복")을 그대로 가져온
+  것이고, 그 열이 없거나 비어 있으면 "미분류"로 묶입니다
+  (`classifyEventType`, `src/utils/columnAliases.js`).
 - `inventory`의 `currentStock`(현재재고)/`safetyStock`(안전재고)는 주문
   파일에 없는 정보라 대시보드 표에서 직접 입력합니다.
 - `currentStock`은 표 안에서 바로 수정할 수 없고, "전체 교재 수량 현황"
@@ -258,6 +285,15 @@ LMS 관리자 페이지에 있는 기존 메뉴 위치에 자연스럽게 끼워
 - "판매채널"/"구매처" 필터(네이버쇼핑/토크스테이션/기타)도 마찬가지로
   원본 채널 문자열(스마트스토어, 자사몰 등)을 고정된 3가지로 자동
   분류합니다(`normalizeChannel`, `src/utils/aggregation.js`).
+- "주문취소/반품관리"의 기간 필터는 **신청일(claimDate)이 있는 건에만
+  적용**됩니다. 신청일이 없는 건(예: 주문 파일에서 자동 감지된 취소 건,
+  사유/신청일 열이 없는 파일로 올린 건)은 기간과 상관없이 항상 표시되어,
+  담당자가 순차적으로 확인·처리할 수 있게 했습니다(`filterCancelReturns`).
+- 목록의 **"요청상세"** 버튼을 누르면 신청일/사유/처리상태 등 세부 정보를
+  볼 수 있습니다. 업로드한 파일에 그 항목 자체가 없어서 값을 채울 수 없는
+  경우에는 "-" 대신 "데이터 이전 고도화 예정"이라고 표시해, 버그로 비어
+  있는 것과 원래 그 항목이 없는 것을 구분할 수 있게 했습니다
+  (`CancelReturnDetailView`).
 
 ## 엑셀 파싱 관련 참고사항
 

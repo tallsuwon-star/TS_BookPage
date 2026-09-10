@@ -94,7 +94,7 @@ export default function FilterBar({
           recordLabel="주문"
           recordsKey="orders"
           parseFn={parseOrderExcelFile}
-          onImport={uploadOrders}
+          onImport={(orders, raw) => uploadOrders(orders, raw?.eventOrders)}
         />
         <button type="button" className="btn" onClick={onExport}>
           ⬇ 엑셀 다운로드
