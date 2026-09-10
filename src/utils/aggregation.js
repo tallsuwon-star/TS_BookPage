@@ -8,6 +8,8 @@ const SHIPPED_KEYWORDS = ['배송중', '배송완료', '구매확정', '발송�
 // 반품 접수(수거) 진행 중인 상태. "반품"이라는 글자가 CANCELLED_KEYWORDS에도
 // 포함되어 있어, 순서상 반드시 취소 판정보다 먼저 확인해야 한다.
 const RETURN_COLLECTING_KEYWORDS = ['수거중']
+// 네이버 이벤트 주문건에서 리뷰 파일과 매칭되어 리뷰 작성이 확인된 상태.
+const REVIEW_DONE_KEYWORDS = ['리뷰 작성완료']
 
 export function isCancelledStatus(status) {
   const str = String(status || '')
@@ -19,6 +21,11 @@ export function isReturnCollectingStatus(status) {
   return RETURN_COLLECTING_KEYWORDS.some((k) => str.includes(k))
 }
 
+export function isReviewDoneStatus(status) {
+  const str = String(status || '')
+  return REVIEW_DONE_KEYWORDS.some((k) => str.includes(k))
+}
+
 // '출고'된 것으로 간주할 주문: 취소/반품 건은 제외하고, 실제 배송이
 // 시작되었거나 완료된 상태만 집계한다.
 export function isShippedStatus(status) {
@@ -28,10 +35,12 @@ export function isShippedStatus(status) {
 }
 
 // 배송상태를 한눈에 구분할 수 있도록 색을 입힌다: 발송대기(빨강) /
-// 발송중·발송완료(연두) / 반품 수거중(보라) / 취소·반품접수완료(회색).
+// 발송중·발송완료(연두) / 리뷰 작성완료(파랑) / 반품 수거중(보라) /
+// 취소·반품접수완료(회색).
 export function getDeliveryStatusStyle(status) {
   if (isReturnCollectingStatus(status)) return { color: '#7c3aed', bg: '#f5f3ff' }
   if (isCancelledStatus(status)) return { color: '#64748b', bg: '#f1f5f9' }
+  if (isReviewDoneStatus(status)) return { color: '#2563eb', bg: '#eff6ff' }
   if (isShippedStatus(status)) return { color: '#4d7c0f', bg: '#f7fee7' }
   return { color: '#dc2626', bg: '#fef2f2' }
 }
@@ -244,6 +253,17 @@ export function extractCancelledFromOrders(orders) {
 }
 
 // --- 네이버 이벤트 주문건 (3+1/10원 체험 등 교재가 아닌 주문) ---
+
+// 네이버 이벤트 주문건의 표시 상태. 리뷰 파일과 매칭되어 리뷰 작성이
+// 확인되면 무조건 "리뷰 작성완료"로 표시하고, 그다음 담당자가 "발송처리"
+// 한 상태(shippingInfo.status, 보통 '발송중')를 보여주며, 둘 다 없으면
+// 원본 배송상태(발송대기/취소 등)를 그대로 보여준다. shippingInfo는
+// orderManagement의 송장처리와 같은 저장소를 재사용한다(id가 파일 전체
+// 행 번호 기준이라 교재 주문과 겹치지 않는다).
+export function getEventOrderDisplayStatus(order, shipping) {
+  if (shipping?.reviewWritten) return '리뷰 작성완료'
+  return shipping?.status || order.deliveryStatus || '발송대기'
+}
 
 // "구분" 값(3+1/10원/기타/중복 등) 기준으로 묶어서, 화면에서 유형별로
 // 아코디언을 펼치면 해당 유형의 주문만 나열할 수 있게 한다.

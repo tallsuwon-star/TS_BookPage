@@ -116,3 +116,16 @@
   font-weight: 600;
   white-space: nowrap;
 }
+
+/* 옆이 아니라 표 아래에 전체 너비로 펼치는 상세 패널(요청상세, 이벤트
+   주문상세 등)에 공통으로 쓰는 래퍼. 표가 이미 여러 개 나란히 있는
+   화면에서 옆에 패널을 붙이면 겹치므로 아래쪽에 배치한다. */
+.detail-panel-row {
+  margin-top: 16px;
+}
+
+.detail-panel-row .order-panel {
+  width: 100%;
+  max-width: 640px;
+  position: static;
+}

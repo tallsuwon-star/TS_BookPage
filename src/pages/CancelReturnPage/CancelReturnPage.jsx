@@ -17,7 +17,7 @@ import {
 } from '../../utils/aggregation'
 import { exportCancelReturnsToExcel } from '../../utils/exportExcel'
 import '../DashboardPage/DashboardPage.css'
-import './CancelReturnPage.css'
+import '../../components/common/DataTable.css'
 
 export default function CancelReturnPage() {
   const { orders, eventOrders, cancelReturns, resetCancelReturns, loading } = useData()
@@ -109,7 +109,7 @@ export default function CancelReturnPage() {
       </div>
 
       {detailRecord && (
-        <div className="cancel-return__detail-row">
+        <div className="detail-panel-row">
           <CancelReturnDetailView record={detailRecord} onClose={() => setDetailRecord(null)} />
         </div>
       )}

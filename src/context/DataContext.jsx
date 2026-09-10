@@ -179,6 +179,31 @@ export function DataProvider({ children }) {
     [persist],
   )
 
+  // 리뷰 파일(네이버 리뷰 관리 다운로드)에 등장하는 주문번호를
+  // eventOrders와 대조해서, 일치하는 주문에 reviewWritten:true를 기록한다.
+  // shippingInfo를 그대로 재사용한다 — 주문 id는 파일 전체 행 번호
+  // 기준이라 교재 주문/이벤트 주문 사이에 겹치지 않는다.
+  const uploadReviews = useCallback(
+    async (reviewRecords) => {
+      const reviewedOrderNumbers = new Set(reviewRecords.map((r) => r.orderNumber).filter(Boolean))
+      setShippingInfo((prev) => {
+        const next = { ...prev }
+        for (const order of eventOrders) {
+          if (order.orderNumber && reviewedOrderNumbers.has(order.orderNumber)) {
+            next[order.id] = {
+              ...(next[order.id] || {}),
+              reviewWritten: true,
+              reviewMatchedAt: new Date().toISOString(),
+            }
+          }
+        }
+        persist({ shippingInfo: next })
+        return next
+      })
+    },
+    [persist, eventOrders],
+  )
+
   const value = useMemo(
     () => ({
       orders,
@@ -199,6 +224,7 @@ export function DataProvider({ children }) {
       uploadCancelReturns,
       resetCancelReturns,
       updateShippingInfo,
+      uploadReviews,
       reload: loadRemote,
       clearError: () => setError(null),
     }),
@@ -221,6 +247,7 @@ export function DataProvider({ children }) {
       uploadCancelReturns,
       resetCancelReturns,
       updateShippingInfo,
+      uploadReviews,
       loadRemote,
     ],
   )

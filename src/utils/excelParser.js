@@ -3,6 +3,7 @@ import {
   FIELD_DEFS,
   CANCEL_RETURN_FIELD_DEFS,
   ORDER_EXTRA_FIELD_DEFS,
+  REVIEW_FIELD_DEFS,
   NAVER_EXPORT_MIN_COLUMNS,
   isTextbookProduct,
 } from './columnAliases'
@@ -204,4 +205,17 @@ export async function parseCancelReturnExcelFile(file) {
     }
   })
   return { cancelReturns: records, meta: { ...meta, skippedNonTextbook } }
+}
+
+// 네이버 "리뷰 관리" 다운로드 파일용 파서.
+// ⚠️ 실제 파일 형식을 아직 받지 못해 우선 주문번호(주문상세번호)만 뽑는
+// 최소 버전이다(columnAliases.js의 REVIEW_FIELD_DEFS 주석 참고). 실제
+// 파일을 받으면 이 함수를 그 형식에 맞게 다시 다듬어야 한다.
+export async function parseReviewExcelFile(file) {
+  const { records, meta } = await parseGenericExcelFile(file, REVIEW_FIELD_DEFS, (get) => {
+    const orderNumber = String(get('orderNumber') || '').trim()
+    if (!orderNumber) return null
+    return { orderNumber }
+  })
+  return { reviews: records, meta }
 }
