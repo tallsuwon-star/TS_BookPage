@@ -39,10 +39,6 @@ function assertConfigured() {
   }
 }
 
-function rawUrl() {
-  return `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${DATA_PATH}`
-}
-
 function contentsApiUrl() {
   return `https://api.github.com/repos/${OWNER}/${REPO}/contents/${DATA_PATH}`
 }
@@ -52,19 +48,34 @@ function utf8ToBase64(str) {
   return btoa(unescape(encodeURIComponent(str)))
 }
 
-export async function fetchRemoteData() {
-  assertConfigured()
-  const res = await fetch(`${rawUrl()}?t=${Date.now()}`, {
-    headers: { Authorization: `Bearer ${TOKEN}` },
+function base64ToUtf8(base64) {
+  return decodeURIComponent(escape(atob(base64.replace(/\n/g, ''))))
+}
+
+// ⚠️ raw.githubusercontent.com은 뒤에 CDN이 있어서, 저장(PUT) 직후
+// 새로고침해도 방금 커밋한 최신 내용이 아니라 몇 분 전 캐시된 내용이
+// 그대로 내려올 수 있다(쿼리스트링 캐시버스팅으로도 해결되지 않는
+// 경우가 있음). 실제로 "업로드했는데 새로고침하니 사라졌다"는 문제의
+// 원인이 바로 이것이었다. 그래서 읽기도 저장할 때 쓰는 것과 같은
+// GitHub Contents API(api.github.com)로 통일한다 — 이 엔드포인트는
+// 캐싱 지연 없이 항상 최신 커밋 내용을 돌려준다.
+async function getFileContent() {
+  const res = await fetch(`${contentsApiUrl()}?ref=${BRANCH}`, {
+    headers: { Authorization: `Bearer ${TOKEN}`, Accept: 'application/vnd.github+json' },
     cache: 'no-store',
   })
-  if (res.status === 404) {
-    return { ...EMPTY_DATA }
-  }
+  if (res.status === 404) return null
   if (!res.ok) {
-    throw new Error(`data.json을 불러오지 못했습니다. (HTTP ${res.status})`)
+    throw new Error(`data.json 파일 정보를 조회하지 못했습니다. (HTTP ${res.status})`)
   }
-  const text = await res.text()
+  return res.json()
+}
+
+export async function fetchRemoteData() {
+  assertConfigured()
+  const file = await getFileContent()
+  if (!file) return { ...EMPTY_DATA }
+  const text = base64ToUtf8(file.content)
   if (!text.trim()) return { ...EMPTY_DATA }
   try {
     const json = JSON.parse(text)
@@ -82,15 +93,8 @@ export async function fetchRemoteData() {
 }
 
 async function getFileSha() {
-  const res = await fetch(`${contentsApiUrl()}?ref=${BRANCH}`, {
-    headers: { Authorization: `Bearer ${TOKEN}`, Accept: 'application/vnd.github+json' },
-  })
-  if (res.status === 404) return null
-  if (!res.ok) {
-    throw new Error(`data.json 파일 정보를 조회하지 못했습니다. (HTTP ${res.status})`)
-  }
-  const json = await res.json()
-  return json.sha
+  const file = await getFileContent()
+  return file ? file.sha : null
 }
 
 // GitHub Contents API는 PUT 시점의 sha가 "지금" 저장소에 있는 sha와 정확히
