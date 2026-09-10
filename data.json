@@ -105,7 +105,15 @@
     }
   },
   "cancelReturns": [],
-  "shippingInfo": {},
+  "shippingInfo": {
+    "row322-320": {
+      "courier": "CJ대한통운",
+      "trackingNumber": "1",
+      "status": "발송중",
+      "processedBy": "관리자",
+      "processedAt": "2026-09-10T05:49:24.257Z"
+    }
+  },
   "eventOrders": [
     {
       "id": "row2-0",
@@ -7532,5 +7540,5 @@
       "isTextbook": false
     }
   ],
-  "updatedAt": "2026-09-10T05:48:53.113Z"
+  "updatedAt": "2026-09-10T05:49:24.257Z"
 }
