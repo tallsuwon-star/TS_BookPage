@@ -97,7 +97,24 @@
       "isTextbook": true
     }
   ],
-  "inventory": {},
+  "inventory": {
+    "[초등화상영어 토크스테이션] 아이딕보카 그림영단어장 3000": {
+      "currentStock": 1232130,
+      "safetyStock": 0
+    },
+    "토크스테이션 아이딕파닉스1 ( iDic PHONICS 1 )": {
+      "currentStock": 123210,
+      "safetyStock": 0
+    },
+    "토크스테이션 아이딕파닉스2 ( iDic PHONICS 2 )": {
+      "currentStock": 1230,
+      "safetyStock": 0
+    },
+    "토크스테이션 아이딕파닉스3 ( iDic PHONICS 3 )": {
+      "currentStock": 1230,
+      "safetyStock": 0
+    }
+  },
   "cancelReturns": [],
   "shippingInfo": {
     "row322-320": {
@@ -7547,5 +7564,5 @@
       "isTextbook": false
     }
   ],
-  "updatedAt": "2026-09-11T12:49:12.084Z"
+  "updatedAt": "2026-09-11T12:49:20.479Z"
 }
