@@ -100,7 +100,8 @@
   "inventory": {
     "[초등화상영어 토크스테이션] 아이딕보카 그림영단어장 3000": {
       "currentStock": 1232130,
-      "safetyStock": 0
+      "safetyStock": 0,
+      "lossQty": 1
     },
     "토크스테이션 아이딕파닉스1 ( iDic PHONICS 1 )": {
       "currentStock": 123210,
@@ -7564,5 +7565,5 @@
       "isTextbook": false
     }
   ],
-  "updatedAt": "2026-09-11T12:49:20.479Z"
+  "updatedAt": "2026-09-11T12:49:28.435Z"
 }
