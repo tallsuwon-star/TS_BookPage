@@ -143,7 +143,14 @@
       "trackingNumber": "21321",
       "status": "발송중",
       "processedBy": "관리자",
-      "processedAt": "2026-09-11T12:49:58.181Z"
+      "processedAt": "2026-09-11T12:49:58.181Z",
+      "returnReason": "",
+      "returnCourier": "CJ대한통운",
+      "returnPhone": "010-0000-0322",
+      "returnAddress": "서울특별시 송파구 송이로31길 20 (문정동) 힐스테이트이편한세상문정",
+      "returnStatus": "수거중",
+      "returnProcessedBy": "관리자",
+      "returnRequestedAt": "2026-09-11T12:50:05.501Z"
     }
   },
   "eventOrders": [
@@ -7572,5 +7579,5 @@
       "isTextbook": false
     }
   ],
-  "updatedAt": "2026-09-11T12:49:58.181Z"
+  "updatedAt": "2026-09-11T12:50:05.501Z"
 }
