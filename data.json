@@ -133,6 +133,13 @@
       "returnStatus": "수거중",
       "returnProcessedBy": "관리자",
       "returnRequestedAt": "2026-09-11T12:50:05.501Z"
+    },
+    "row374-372": {
+      "courier": "CJ대한통운",
+      "trackingNumber": "32",
+      "status": "발송중",
+      "processedBy": "관리자",
+      "processedAt": "2026-09-15T09:40:02.745Z"
     }
   },
   "eventOrders": [
@@ -7561,5 +7568,5 @@
       "isTextbook": false
     }
   ],
-  "updatedAt": "2026-09-15T09:39:30.110Z"
+  "updatedAt": "2026-09-15T09:40:02.745Z"
 }
