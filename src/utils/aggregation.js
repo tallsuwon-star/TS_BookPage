@@ -278,3 +278,35 @@ export function groupEventOrdersByType(eventOrders) {
     .map(([type, orders]) => ({ type, orders, count: orders.length }))
     .sort((a, b) => b.count - a.count)
 }
+
+// "네이버 이벤트 주문건" 화면 상단의 기간 선택은 채널/교재구분 없이 날짜만
+// 걸러내면 되므로, filterOrders와 분리된 전용 필터를 둔다.
+export function filterEventOrders(eventOrders, { startDate, endDate } = {}) {
+  return eventOrders.filter((order) => isWithinRange(order.orderDate, startDate, endDate))
+}
+
+// 상단 비중 막대용 유형별 집계. 카테고리 색 팔레트가 4개 슬롯까지만 서로
+// 뚜렷이 구분되도록 검증돼 있어(dataviz 팔레트 1~4번: 파랑/주황/아쿠아/노랑),
+// 건수 상위 3개만 각자 보여주고 나머지는 전부 "기타"로 묶어 총 4개를 넘지
+// 않게 한다.
+export function computeEventTypeBreakdown(eventOrders, maxSeries = 4) {
+  const counts = new Map()
+  for (const order of eventOrders) {
+    const type = classifyEventType(order.eventType)
+    counts.set(type, (counts.get(type) || 0) + 1)
+  }
+  const sorted = Array.from(counts.entries())
+    .map(([type, count]) => ({ type, count }))
+    .sort((a, b) => b.count - a.count)
+
+  if (sorted.length <= maxSeries) return sorted
+
+  const head = sorted.slice(0, maxSeries - 1)
+  const tailCount = sorted.slice(maxSeries - 1).reduce((sum, d) => sum + d.count, 0)
+  const headEtc = head.find((d) => d.type === '기타')
+  if (headEtc) {
+    headEtc.count += tailCount
+    return head
+  }
+  return [...head, { type: '기타', count: tailCount }]
+}

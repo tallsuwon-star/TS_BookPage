@@ -2,13 +2,16 @@ import { useMemo, useState } from 'react'
 import { useData } from '../../context/DataContext'
 import Card from '../../components/common/Card'
 import EventTypeAccordion from '../../components/naverEvents/EventTypeAccordion'
+import EventTypeBarCard from '../../components/naverEvents/EventTypeBarCard'
 import EventOrderDetailView from '../../components/naverEvents/EventOrderDetailView'
 import ExcelUploadButton from '../../components/common/ExcelUploadButton'
 import { parseReviewExcelFile } from '../../utils/excelParser'
-import { groupEventOrdersByType } from '../../utils/aggregation'
+import { computeEventTypeBreakdown, filterEventOrders, groupEventOrdersByType } from '../../utils/aggregation'
+import { defaultDateRange } from '../../utils/dateUtils'
 import '../../components/common/DataTable.css'
 import '../DashboardPage/DashboardPage.css'
 import '../OrderManagementPage/OrderManagementPage.css'
+import '../../components/dashboard/FilterBar.css'
 
 // 발주발송관리 파일에 함께 섞여 내려오는, 교재가 아닌 이벤트성 주문(화상영어
 // 체험권, 3+1 이벤트, 10원 이벤트 등)을 확인하는 화면. "교재 주문/재고관리"
@@ -23,8 +26,14 @@ import '../OrderManagementPage/OrderManagementPage.css'
 export default function NaverEventOrdersPage() {
   const { eventOrders, shippingInfo, updateShippingInfo, uploadReviews, loading } = useData()
   const [detailOrder, setDetailOrder] = useState(null)
+  const [{ startDate, endDate }, setDateRange] = useState(defaultDateRange())
 
-  const groups = useMemo(() => groupEventOrdersByType(eventOrders), [eventOrders])
+  const filteredEventOrders = useMemo(
+    () => filterEventOrders(eventOrders, { startDate, endDate }),
+    [eventOrders, startDate, endDate],
+  )
+  const breakdown = useMemo(() => computeEventTypeBreakdown(filteredEventOrders), [filteredEventOrders])
+  const groups = useMemo(() => groupEventOrdersByType(filteredEventOrders), [filteredEventOrders])
 
   const handleBulkProcess = async (ids, message) => {
     for (const id of ids) {
@@ -50,6 +59,38 @@ export default function NaverEventOrdersPage() {
         없습니다. "발송처리"를 하면 리뷰 요청 문자 문구가 준비되고(자동 발송 미연동이라 직접 전달), 네이버 "리뷰
         관리" 파일을 올리면 주문번호가 일치하는 건이 자동으로 "리뷰 작성완료"로 표시됩니다.
       </p>
+
+      <div className="filter-bar">
+        <div className="filter-bar__group">
+          <div>
+            <label className="field-label">시작일</label>
+            <input
+              type="date"
+              className="field-input"
+              value={startDate}
+              max={endDate || undefined}
+              onChange={(e) => setDateRange((prev) => ({ ...prev, startDate: e.target.value }))}
+            />
+          </div>
+          <span className="filter-bar__tilde">~</span>
+          <div>
+            <label className="field-label">종료일</label>
+            <input
+              type="date"
+              className="field-input"
+              value={endDate}
+              min={startDate || undefined}
+              onChange={(e) => setDateRange((prev) => ({ ...prev, endDate: e.target.value }))}
+            />
+          </div>
+        </div>
+      </div>
+
+      {breakdown.length > 0 && (
+        <div className="dashboard-page__cards">
+          <EventTypeBarCard data={breakdown} />
+        </div>
+      )}
 
       <div className="data-table-card__actions" style={{ marginBottom: 16 }}>
         <ExcelUploadButton
