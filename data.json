@@ -157,6 +157,13 @@
       "status": "발송중",
       "processedBy": "관리자",
       "processedAt": "2026-09-15T09:40:02.745Z"
+    },
+    "row424-422": {
+      "courier": "CJ대한통운",
+      "trackingNumber": "213",
+      "status": "발송중",
+      "processedBy": "관리자",
+      "processedAt": "2026-09-17T10:16:43.928Z"
     }
   },
   "eventOrders": [
@@ -7585,5 +7592,5 @@
       "isTextbook": false
     }
   ],
-  "updatedAt": "2026-09-17T10:15:55.689Z"
+  "updatedAt": "2026-09-17T10:16:43.928Z"
 }
