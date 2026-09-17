@@ -265,24 +265,24 @@ export function getEventOrderDisplayStatus(order, shipping) {
   return shipping?.status || order.deliveryStatus || '발송대기'
 }
 
-// "구분" 값(3+1/10원/기타/중복 등) 기준으로 묶어서, 화면에서 유형별로
-// 아코디언을 펼치면 해당 유형의 주문만 나열할 수 있게 한다.
-export function groupEventOrdersByType(eventOrders) {
-  const map = new Map()
-  for (const order of eventOrders) {
-    const type = classifyEventType(order.eventType)
-    if (!map.has(type)) map.set(type, [])
-    map.get(type).push(order)
-  }
-  return Array.from(map.entries())
-    .map(([type, orders]) => ({ type, orders, count: orders.length }))
-    .sort((a, b) => b.count - a.count)
+// "네이버 이벤트 주문건" 화면의 기간 + 구분(유형) 필터. 채널/교재구분은
+// 이벤트 주문에는 해당사항이 없어 filterOrders와 분리된 전용 필터를 둔다.
+export function filterEventOrders(eventOrders, { startDate, endDate, eventType } = {}) {
+  return eventOrders.filter((order) => {
+    if (!isWithinRange(order.orderDate, startDate, endDate)) return false
+    if (eventType && eventType !== 'all' && classifyEventType(order.eventType) !== eventType) return false
+    return true
+  })
 }
 
-// "네이버 이벤트 주문건" 화면 상단의 기간 선택은 채널/교재구분 없이 날짜만
-// 걸러내면 되므로, filterOrders와 분리된 전용 필터를 둔다.
-export function filterEventOrders(eventOrders, { startDate, endDate } = {}) {
-  return eventOrders.filter((order) => isWithinRange(order.orderDate, startDate, endDate))
+// "구분" 필터 드롭다운에 채울 옵션 목록. 팀이 시트에 적어둔 값(3+1/10원/
+// 아이딕 탭 이벤트 등)을 그대로 보여준다.
+export function getAllEventTypes(eventOrders) {
+  const set = new Set()
+  for (const order of eventOrders) {
+    set.add(classifyEventType(order.eventType))
+  }
+  return Array.from(set)
 }
 
 // 상단 비중 막대용 유형별 집계. 카테고리 색 팔레트가 4개 슬롯까지만 서로

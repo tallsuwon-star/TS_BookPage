@@ -1,12 +1,11 @@
 import { useMemo, useState } from 'react'
 import { useData } from '../../context/DataContext'
-import Card from '../../components/common/Card'
-import EventTypeAccordion from '../../components/naverEvents/EventTypeAccordion'
 import EventTypeBarCard from '../../components/naverEvents/EventTypeBarCard'
+import EventOrderListTable from '../../components/naverEvents/EventOrderListTable'
 import EventOrderDetailView from '../../components/naverEvents/EventOrderDetailView'
 import ExcelUploadButton from '../../components/common/ExcelUploadButton'
 import { parseReviewExcelFile } from '../../utils/excelParser'
-import { computeEventTypeBreakdown, filterEventOrders, groupEventOrdersByType } from '../../utils/aggregation'
+import { computeEventTypeBreakdown, filterEventOrders, getAllEventTypes } from '../../utils/aggregation'
 import { defaultDateRange } from '../../utils/dateUtils'
 import '../../components/common/DataTable.css'
 import '../DashboardPage/DashboardPage.css'
@@ -18,6 +17,10 @@ import '../../components/dashboard/FilterBar.css'
 // 등에서 쓰는 것과 같은 주문 파일을 올리면 자동으로 채워지며, 별도 업로드가
 // 필요 없다(팀이 시트에 미리 계산해 둔 "구분" 열 값 기준으로 묶는다).
 //
+// 유형이 여러 개일 때 하나씩 아코디언을 펼쳐봐야 하는 게 불편하다는 피드백에
+// 따라, "교재 주문 대시보드"의 "교재구분" 필터와 같은 방식으로 상단에
+// "구분" 드롭다운을 두고 고른 유형만 표로 바로 보여준다(아코디언 제거).
+//
 // "발송처리"를 하면 리뷰 요청 문자 문구가 준비되고(자동 발송 미연동이라
 // 담당자가 직접 전달), 네이버 "리뷰 관리" 파일을 올리면 주문번호가 일치하는
 // 건이 자동으로 "리뷰 작성완료"로 바뀐다. 상태가 바뀌어도 목록 순서는
@@ -27,13 +30,15 @@ export default function NaverEventOrdersPage() {
   const { eventOrders, shippingInfo, updateShippingInfo, uploadReviews, loading } = useData()
   const [detailOrder, setDetailOrder] = useState(null)
   const [{ startDate, endDate }, setDateRange] = useState(defaultDateRange())
+  const [eventType, setEventType] = useState('all')
+
+  const eventTypeOptions = useMemo(() => getAllEventTypes(eventOrders), [eventOrders])
 
   const filteredEventOrders = useMemo(
-    () => filterEventOrders(eventOrders, { startDate, endDate }),
-    [eventOrders, startDate, endDate],
+    () => filterEventOrders(eventOrders, { startDate, endDate, eventType }),
+    [eventOrders, startDate, endDate, eventType],
   )
   const breakdown = useMemo(() => computeEventTypeBreakdown(filteredEventOrders), [filteredEventOrders])
-  const groups = useMemo(() => groupEventOrdersByType(filteredEventOrders), [filteredEventOrders])
 
   const handleBulkProcess = async (ids, message) => {
     for (const id of ids) {
@@ -83,6 +88,18 @@ export default function NaverEventOrdersPage() {
               onChange={(e) => setDateRange((prev) => ({ ...prev, endDate: e.target.value }))}
             />
           </div>
+
+          <div>
+            <label className="field-label">구분</label>
+            <select className="field-select" value={eventType} onChange={(e) => setEventType(e.target.value)}>
+              <option value="all">전체</option>
+              {eventTypeOptions.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -104,26 +121,12 @@ export default function NaverEventOrdersPage() {
 
       <div className="order-management__body">
         <div className="order-management__table">
-          <Card title="유형별 주문 현황" className="data-table-card">
-            {groups.length === 0 ? (
-              <p className="data-table__empty">
-                표시할 이벤트 주문이 없습니다. 주문 파일을 올리면 자동으로 채워집니다.
-              </p>
-            ) : (
-              groups.map((group, idx) => (
-                <EventTypeAccordion
-                  key={group.type}
-                  type={group.type}
-                  orders={group.orders}
-                  shippingInfo={shippingInfo}
-                  count={group.count}
-                  defaultOpen={idx === 0}
-                  onOpenDetail={setDetailOrder}
-                  onBulkProcess={handleBulkProcess}
-                />
-              ))
-            )}
-          </Card>
+          <EventOrderListTable
+            orders={filteredEventOrders}
+            shippingInfo={shippingInfo}
+            onOpenDetail={setDetailOrder}
+            onBulkProcess={handleBulkProcess}
+          />
         </div>
 
         {detailOrder && (
