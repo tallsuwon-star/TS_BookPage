@@ -48,6 +48,9 @@ export const MENU_TREE = [
     label: '고객센터 상담문의',
     icon: '👥',
     children: [
+      // 실제로 동작하는 화면. 구글 시트로 하던 운영팀↔학습팀 상담 이관을
+      // 대체한다(기획안 "운영↔학습팀 상담 요청 페이지 구축" 참고).
+      { key: 'consult-request', label: '운영팀/학습팀 상담 이관', path: '/consult-request' },
       { label: '고객센터 상담리스트' },
       { label: '자주쓰는 답변관리' },
       { label: '고객센터 상담통계' },

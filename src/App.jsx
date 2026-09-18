@@ -6,6 +6,7 @@ import CancelReturnPage from './pages/CancelReturnPage/CancelReturnPage'
 import OrderManagementPage from './pages/OrderManagementPage/OrderManagementPage'
 import NaverEventOrdersPage from './pages/NaverEventOrdersPage/NaverEventOrdersPage'
 import ManagerTrainingPage from './pages/ManagerTrainingPage/ManagerTrainingPage'
+import ConsultRequestPage from './pages/ConsultRequestPage/ConsultRequestPage'
 
 // GitHub Pages는 정적 호스팅이라 클라이언트 라우팅 새로고침 시 404가 발생하기
 // 쉬우므로, 서버 설정 없이도 안전하게 동작하는 HashRouter를 사용한다.
@@ -22,6 +23,7 @@ function App() {
             <Route path="/cancel-return" element={<CancelReturnPage />} />
             <Route path="/naver-events" element={<NaverEventOrdersPage />} />
             <Route path="/manager-training" element={<ManagerTrainingPage />} />
+            <Route path="/consult-request" element={<ConsultRequestPage />} />
           </Route>
         </Routes>
       </HashRouter>

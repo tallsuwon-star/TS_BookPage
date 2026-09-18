@@ -9,6 +9,7 @@ export function DataProvider({ children }) {
   const [cancelReturns, setCancelReturns] = useState([])
   const [shippingInfo, setShippingInfo] = useState({})
   const [eventOrders, setEventOrders] = useState([])
+  const [consultRequests, setConsultRequests] = useState([])
   const [loading, setLoading] = useState(true)
   const [syncing, setSyncing] = useState(false)
   const [error, setError] = useState(null)
@@ -58,6 +59,7 @@ export function DataProvider({ children }) {
       setCancelReturns(data.cancelReturns)
       setShippingInfo(data.shippingInfo)
       setEventOrders(data.eventOrders)
+      setConsultRequests(data.consultRequests)
       setLastSyncedAt(data.updatedAt)
     } catch (err) {
       if (!mounted.current) return
@@ -90,6 +92,7 @@ export function DataProvider({ children }) {
             cancelReturns: nextState.cancelReturns ?? cancelReturns,
             shippingInfo: nextState.shippingInfo ?? shippingInfo,
             eventOrders: nextState.eventOrders ?? eventOrders,
+            consultRequests: nextState.consultRequests ?? consultRequests,
           })
           if (!mounted.current) return true
           setLastSyncedAt(saved.updatedAt)
@@ -111,7 +114,7 @@ export function DataProvider({ children }) {
       )
       return result
     },
-    [configured, orders, inventory, cancelReturns, shippingInfo, eventOrders],
+    [configured, orders, inventory, cancelReturns, shippingInfo, eventOrders, consultRequests],
   )
 
   // parsedEventOrders는 같은 주문 파일에서 교재가 아닌 상품(3+1/10원 이벤트
@@ -235,6 +238,30 @@ export function DataProvider({ children }) {
     [persist, eventOrders, shippingInfo],
   )
 
+  // 운영팀이 "상담 요청 등록" 폼에서 새 상담 이관 건을 추가할 때 사용한다.
+  // record는 이미 id/createdAt/status(기본 '상담대기')까지 채워서 넘어온다
+  // (ConsultRequestFormPanel 참고).
+  const addConsultRequest = useCallback(
+    async (record) => {
+      const next = [...consultRequests, record]
+      setConsultRequests(next)
+      return persist({ consultRequests: next })
+    },
+    [persist, consultRequests],
+  )
+
+  // 상담 상세 화면에서 담당자/상태/상담결과/재상담예정일을 수정할 때 사용한다.
+  const updateConsultRequest = useCallback(
+    async (id, patch) => {
+      const next = consultRequests.map((r) =>
+        r.id === id ? { ...r, ...patch, updatedAt: new Date().toISOString() } : r,
+      )
+      setConsultRequests(next)
+      return persist({ consultRequests: next })
+    },
+    [persist, consultRequests],
+  )
+
   const value = useMemo(
     () => ({
       orders,
@@ -242,6 +269,7 @@ export function DataProvider({ children }) {
       cancelReturns,
       shippingInfo,
       eventOrders,
+      consultRequests,
       loading,
       syncing,
       error,
@@ -256,6 +284,8 @@ export function DataProvider({ children }) {
       resetCancelReturns,
       updateShippingInfo,
       uploadReviews,
+      addConsultRequest,
+      updateConsultRequest,
       reload: loadRemote,
       clearError: () => setError(null),
     }),
@@ -265,6 +295,7 @@ export function DataProvider({ children }) {
       cancelReturns,
       shippingInfo,
       eventOrders,
+      consultRequests,
       loading,
       syncing,
       error,
@@ -279,6 +310,8 @@ export function DataProvider({ children }) {
       resetCancelReturns,
       updateShippingInfo,
       uploadReviews,
+      addConsultRequest,
+      updateConsultRequest,
       loadRemote,
     ],
   )
