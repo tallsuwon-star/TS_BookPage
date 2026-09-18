@@ -1,4 +1,4 @@
-import { CONSULT_STATUS_OPTIONS } from '../../utils/consultRequests'
+import { CONSULT_STATUS_OPTIONS, LEARNING_TEAM_MEMBERS } from '../../utils/consultRequests'
 import '../dashboard/FilterBar.css'
 
 export default function ConsultRequestFilterBar({
@@ -7,7 +7,6 @@ export default function ConsultRequestFilterBar({
   consultTypeOptions,
   assignee,
   onAssigneeChange,
-  assigneeOptions,
   status,
   onStatusChange,
   onOpenForm,
@@ -31,7 +30,7 @@ export default function ConsultRequestFilterBar({
           <label className="field-label">담당자</label>
           <select className="field-select" value={assignee} onChange={(e) => onAssigneeChange(e.target.value)}>
             <option value="all">전체</option>
-            {assigneeOptions.map((a) => (
+            {LEARNING_TEAM_MEMBERS.map((a) => (
               <option key={a} value={a}>
                 {a}
               </option>

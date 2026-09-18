@@ -13,14 +13,31 @@ export const CONSULT_STATUS_STYLE = {
 }
 
 // 담당자가 자주 쓰는 상담유형을 등록 폼에서 바로 고를 수 있도록 제공하는
-// 기본 후보 목록. 실제 필터 드롭다운은 지금까지 등록된 값에서 뽑는다.
+// 기본 후보 목록. "불편신고"도 상담유형 중 하나로 골라서, 상담내용을 기록할
+// 때 바로 불편신고 건으로 분류할 수 있게 한다. 실제 필터 드롭다운은
+// 지금까지 등록된 값에서 뽑는다.
 export const CONSULT_TYPE_SUGGESTIONS = [
   '퇴사 강사 안내',
   '직원 확인 필요 회원',
   '수업 변경 요청',
   '환불/결제 문의',
+  '불편신고',
   '기타',
 ]
+
+export const CONSULT_TYPE_STYLE = {
+  불편신고: { color: '#dc2626', bg: '#fef2f2' },
+}
+const DEFAULT_TYPE_STYLE = { color: '#475569', bg: '#f1f5f9' }
+
+export function getConsultTypeStyle(consultType) {
+  return CONSULT_TYPE_STYLE[consultType] || DEFAULT_TYPE_STYLE
+}
+
+// 아직 회원 로그인/권한 시스템이 없어 "학습팀 담당자" 명단을 별도 DB에서
+// 가져올 수 없다. 실제 명단이 연동되기 전까지는 이 고정 목록을 학습팀
+// 담당자 후보로 쓴다.
+export const LEARNING_TEAM_MEMBERS = ['김룰루', '이학습', '최학습', '정학습']
 
 export function isConsultResolved(status) {
   return status === '상담완료'
@@ -36,6 +53,18 @@ export function getAllConsultTypes(records) {
 
 export function getAllAssignees(records) {
   return [...new Set(records.map((r) => r.assignee).filter(Boolean))].sort()
+}
+
+// 상담 요청 등록 화면에서 회원아이디(이메일)를 입력하면, 이미 저장되어
+// 있는 교재 주문/네이버 이벤트 주문 내역에서 같은 이메일을 가진 회원을
+// 찾아 이름을 자동으로 채워준다. 별도 회원 DB가 없는 지금 상황에서 가장
+// 가까운 "회원정보 연동" 소스가 이미 업로드된 주문 데이터이기 때문이다.
+export function findMemberByIdentifier(identifier, orders = [], eventOrders = []) {
+  const target = (identifier || '').trim().toLowerCase()
+  if (!target) return null
+  const match = [...orders, ...eventOrders].find((o) => (o.email || '').trim().toLowerCase() === target)
+  if (!match) return null
+  return { name: match.buyerName || '', phone: match.phone || '' }
 }
 
 export function filterConsultRequests(records, { consultType, assignee, status }) {

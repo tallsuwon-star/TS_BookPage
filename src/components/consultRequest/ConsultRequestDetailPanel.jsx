@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { CONSULT_STATUS_OPTIONS } from '../../utils/consultRequests'
+import { CONSULT_STATUS_OPTIONS, LEARNING_TEAM_MEMBERS } from '../../utils/consultRequests'
+import { formatDateDisplay } from '../../utils/dateUtils'
 import '../orderManagement/OrderSidePanel.css'
 
 // 기획안의 "상담상세" 화면: 회원 기본정보/요청 원문은 그대로 보여주고,
@@ -36,8 +37,8 @@ export default function ConsultRequestDetailPanel({ record, onSave, onClose }) {
           <dd>{record.requestedBy || '-'}</dd>
           <dt>요청일시</dt>
           <dd>{record.createdAt ? new Date(record.createdAt).toLocaleString('ko-KR') : '-'}</dd>
-          <dt>희망일시</dt>
-          <dd>{record.preferredAt ? new Date(record.preferredAt).toLocaleString('ko-KR') : '-'}</dd>
+          <dt>희망일</dt>
+          <dd>{record.preferredAt ? formatDateDisplay(record.preferredAt.slice(0, 10)) : '-'}</dd>
           <dt>상담유형</dt>
           <dd>
             {record.consultType || '미지정'}
@@ -60,9 +61,15 @@ export default function ConsultRequestDetailPanel({ record, onSave, onClose }) {
           type="text"
           className="field-input"
           style={{ width: '100%', marginBottom: 10 }}
+          list="learning-team-members"
           value={assignee}
           onChange={(e) => setAssignee(e.target.value)}
         />
+        <datalist id="learning-team-members">
+          {LEARNING_TEAM_MEMBERS.map((m) => (
+            <option key={m} value={m} />
+          ))}
+        </datalist>
         <label className="field-label">진행상태</label>
         <select
           className="field-select"

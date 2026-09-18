@@ -1,6 +1,11 @@
 import Card from '../common/Card'
 import Badge from '../common/Badge'
-import { CONSULT_STATUS_STYLE, countPendingConsultRequests, sortConsultRequests } from '../../utils/consultRequests'
+import {
+  CONSULT_STATUS_STYLE,
+  countPendingConsultRequests,
+  getConsultTypeStyle,
+  sortConsultRequests,
+} from '../../utils/consultRequests'
 import '../common/DataTable.css'
 import './ConsultRequestListTable.css'
 
@@ -38,6 +43,7 @@ export default function ConsultRequestListTable({ records, onOpenDetail }) {
             )}
             {sortedRecords.map((r) => {
               const style = CONSULT_STATUS_STYLE[r.status] || DEFAULT_STATUS_STYLE
+              const typeStyle = getConsultTypeStyle(r.consultType)
               return (
                 <tr key={r.id}>
                   <td>{r.createdAt ? new Date(r.createdAt).toLocaleString('ko-KR') : '-'}</td>
@@ -45,7 +51,7 @@ export default function ConsultRequestListTable({ records, onOpenDetail }) {
                   <td>{r.memberName || '-'}</td>
                   <td>{r.memberIdentifier || '-'}</td>
                   <td>
-                    {r.consultType || '미지정'}
+                    <Badge label={r.consultType || '미지정'} color={typeStyle.color} background={typeStyle.bg} />
                     {r.urgent && <span className="data-table__tag">긴급</span>}
                   </td>
                   <td className="data-table__name">{r.content || '-'}</td>

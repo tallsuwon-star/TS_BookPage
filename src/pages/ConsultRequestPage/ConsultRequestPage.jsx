@@ -4,7 +4,7 @@ import ConsultRequestFilterBar from '../../components/consultRequest/ConsultRequ
 import ConsultRequestListTable from '../../components/consultRequest/ConsultRequestListTable'
 import ConsultRequestFormPanel from '../../components/consultRequest/ConsultRequestFormPanel'
 import ConsultRequestDetailPanel from '../../components/consultRequest/ConsultRequestDetailPanel'
-import { filterConsultRequests, getAllAssignees, getAllConsultTypes } from '../../utils/consultRequests'
+import { filterConsultRequests, getAllConsultTypes } from '../../utils/consultRequests'
 import '../DashboardPage/DashboardPage.css'
 import '../OrderManagementPage/OrderManagementPage.css'
 
@@ -20,7 +20,6 @@ export default function ConsultRequestPage() {
   const [panel, setPanel] = useState(null) // { type: 'form' } | { type: 'detail', record } | null
 
   const consultTypeOptions = useMemo(() => getAllConsultTypes(consultRequests), [consultRequests])
-  const assigneeOptions = useMemo(() => getAllAssignees(consultRequests), [consultRequests])
 
   const filteredRecords = useMemo(
     () => filterConsultRequests(consultRequests, { consultType, assignee, status }),
@@ -45,7 +44,6 @@ export default function ConsultRequestPage() {
         consultTypeOptions={consultTypeOptions}
         assignee={assignee}
         onAssigneeChange={setAssignee}
-        assigneeOptions={assigneeOptions}
         status={status}
         onStatusChange={setStatus}
         onOpenForm={() => setPanel({ type: 'form' })}
