@@ -34,9 +34,9 @@ export function getConsultTypeStyle(consultType) {
   return CONSULT_TYPE_STYLE[consultType] || DEFAULT_TYPE_STYLE
 }
 
-// 아직 회원 로그인/권한 시스템이 없어 "학습팀 담당자" 명단을 별도 DB에서
-// 가져올 수 없다. 실제 명단이 연동되기 전까지는 이 고정 목록을 학습팀
-// 담당자 후보로 쓴다.
+// 담당자는 학습팀뿐 아니라 운영팀으로 다시 배정될 수도 있어 자유 입력을
+// 막지는 않지만, 아직 직원 명단을 별도 DB에서 가져올 수 없어 자주
+// 배정되는 학습팀 인원을 타이핑 후보로만 미리 채워둔다.
 export const LEARNING_TEAM_MEMBERS = ['김룰루', '이학습', '최학습', '정학습']
 
 export function isConsultResolved(status) {

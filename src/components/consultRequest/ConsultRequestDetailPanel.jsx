@@ -4,7 +4,7 @@ import { formatDateDisplay } from '../../utils/dateUtils'
 import '../orderManagement/OrderSidePanel.css'
 
 // 기획안의 "상담상세" 화면: 회원 기본정보/요청 원문은 그대로 보여주고,
-// 담당자·상태·상담결과·재상담예정일만 학습팀이 상담 후 채워 넣는다.
+// 담당자·상태·상담결과·재상담예정일만 담당자가 상담 후 채워 넣는다.
 export default function ConsultRequestDetailPanel({ record, onSave, onClose }) {
   const [assignee, setAssignee] = useState(record.assignee || '')
   const [status, setStatus] = useState(record.status || '상담대기')
@@ -56,7 +56,7 @@ export default function ConsultRequestDetailPanel({ record, onSave, onClose }) {
 
       <section className="order-panel__section">
         <h4>담당자 / 상태 변경</h4>
-        <label className="field-label">담당자(학습팀)</label>
+        <label className="field-label">담당자 지정 (지정 시 톡톡으로 발송됩니다)</label>
         <input
           type="text"
           className="field-input"

@@ -147,7 +147,7 @@ export default function ConsultRequestFormPanel({ onSave, onClose }) {
 
       <section className="order-panel__section">
         <h4>배정</h4>
-        <label className="field-label">담당자 지정(학습팀)</label>
+        <label className="field-label">담당자 지정 (지정 시 톡톡으로 발송됩니다)</label>
         <input
           type="text"
           className="field-input"
