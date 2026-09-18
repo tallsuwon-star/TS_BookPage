@@ -7599,5 +7599,23 @@
       "isTextbook": false
     }
   ],
-  "updatedAt": "2026-09-17T10:18:41.999Z"
+  "consultRequests": [
+    {
+      "id": "d78cbee3-aa25-4c88-b756-111168dae3e6",
+      "createdAt": "2026-09-18T03:43:26.987Z",
+      "requestedBy": "",
+      "memberName": "asd",
+      "memberIdentifier": "asd",
+      "consultType": "퇴사 강사 안내",
+      "content": "1",
+      "preferredAt": "2026-09-19T18:41",
+      "assignee": "김룰룰",
+      "urgent": false,
+      "status": "상담대기",
+      "resultNote": "",
+      "nextConsultAt": "",
+      "updatedAt": "2026-09-18T03:43:26.987Z"
+    }
+  ],
+  "updatedAt": "2026-09-18T03:43:26.989Z"
 }
