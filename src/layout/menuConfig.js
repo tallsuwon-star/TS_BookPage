@@ -255,6 +255,8 @@ export const MENU_TREE = [
     label: '운영게시판',
     icon: '👥',
     children: [
+      // 실제로 동작하는 화면. "한국직원 게시판" 바로 위에 배치한다.
+      { key: 'manager-training', label: '신규 운영매니저 교육', path: '/manager-training' },
       { label: '한국직원 게시판' },
       { label: '강사소통 게시판' },
       { label: '유입접속통계' },
