@@ -7615,7 +7615,23 @@
       "resultNote": "",
       "nextConsultAt": "",
       "updatedAt": "2026-09-18T03:43:26.987Z"
+    },
+    {
+      "id": "cf8ce316-d81a-4644-9aae-bd5b7cce82bc",
+      "createdAt": "2026-09-18T03:58:45.610Z",
+      "requestedBy": "ㅁㄴㅇ",
+      "memberName": "ㅁㄴㅇ",
+      "memberIdentifier": "ㅁㄴㅇ",
+      "consultType": "",
+      "content": "ㅁㄴㅇ",
+      "preferredAt": "2026-09-18",
+      "assignee": "김룰루",
+      "urgent": true,
+      "status": "상담대기",
+      "resultNote": "",
+      "nextConsultAt": "",
+      "updatedAt": "2026-09-18T03:58:45.610Z"
     }
   ],
-  "updatedAt": "2026-09-18T03:43:26.989Z"
+  "updatedAt": "2026-09-18T03:58:45.612Z"
 }
