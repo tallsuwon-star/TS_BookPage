@@ -97,7 +97,12 @@
       "isTextbook": true
     }
   ],
-  "inventory": {},
+  "inventory": {
+    "[초등화상영어 토크스테이션] 아이딕보카 그림영단어장 3000": {
+      "currentStock": 0,
+      "safetyStock": 100
+    }
+  },
   "cancelReturns": [],
   "shippingInfo": {
     "row322-320": {
@@ -7616,5 +7621,5 @@
       "updatedAt": "2026-09-18T03:58:45.610Z"
     }
   ],
-  "updatedAt": "2026-09-22T08:46:19.482Z"
+  "updatedAt": "2026-09-22T08:46:51.647Z"
 }
