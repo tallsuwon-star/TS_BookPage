@@ -1,0 +1,44 @@
+.supply-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 18, 28, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.supply-modal {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: var(--shadow-md);
+}
+
+.supply-modal h3 {
+  margin: 0 0 16px;
+  font-size: 16px;
+}
+
+.supply-modal__input {
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.supply-modal__error {
+  font-size: 12px;
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  margin: -4px 0 14px;
+}
+
+.supply-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

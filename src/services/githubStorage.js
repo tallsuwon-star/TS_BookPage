@@ -25,6 +25,7 @@ export const EMPTY_DATA = {
   shippingInfo: {},
   eventOrders: [],
   consultRequests: [],
+  supplyInventory: [],
   updatedAt: null,
 }
 
@@ -87,6 +88,7 @@ export async function fetchRemoteData() {
       shippingInfo: json.shippingInfo && typeof json.shippingInfo === 'object' ? json.shippingInfo : {},
       eventOrders: Array.isArray(json.eventOrders) ? json.eventOrders : [],
       consultRequests: Array.isArray(json.consultRequests) ? json.consultRequests : [],
+      supplyInventory: Array.isArray(json.supplyInventory) ? json.supplyInventory : [],
       updatedAt: json.updatedAt || null,
     }
   } catch {
@@ -106,7 +108,15 @@ async function getFileSha() {
 // 다시 받아와 그대로 재시도하면 대부분 해결되므로 몇 차례 자동 재시도한다.
 const SAVE_RETRY_COUNT = 3
 
-export async function saveRemoteData({ orders, inventory, cancelReturns, shippingInfo, eventOrders, consultRequests }) {
+export async function saveRemoteData({
+  orders,
+  inventory,
+  cancelReturns,
+  shippingInfo,
+  eventOrders,
+  consultRequests,
+  supplyInventory,
+}) {
   assertConfigured()
   const payload = {
     orders: orders || [],
@@ -115,6 +125,7 @@ export async function saveRemoteData({ orders, inventory, cancelReturns, shippin
     shippingInfo: shippingInfo || {},
     eventOrders: eventOrders || [],
     consultRequests: consultRequests || [],
+    supplyInventory: supplyInventory || [],
     updatedAt: new Date().toISOString(),
   }
   const content = utf8ToBase64(JSON.stringify(payload, null, 2))

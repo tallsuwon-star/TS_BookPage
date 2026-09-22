@@ -10,6 +10,7 @@ export function DataProvider({ children }) {
   const [shippingInfo, setShippingInfo] = useState({})
   const [eventOrders, setEventOrders] = useState([])
   const [consultRequests, setConsultRequests] = useState([])
+  const [supplyInventory, setSupplyInventory] = useState([])
   const [loading, setLoading] = useState(true)
   const [syncing, setSyncing] = useState(false)
   const [error, setError] = useState(null)
@@ -60,6 +61,7 @@ export function DataProvider({ children }) {
       setShippingInfo(data.shippingInfo)
       setEventOrders(data.eventOrders)
       setConsultRequests(data.consultRequests)
+      setSupplyInventory(data.supplyInventory)
       setLastSyncedAt(data.updatedAt)
     } catch (err) {
       if (!mounted.current) return
@@ -93,6 +95,7 @@ export function DataProvider({ children }) {
             shippingInfo: nextState.shippingInfo ?? shippingInfo,
             eventOrders: nextState.eventOrders ?? eventOrders,
             consultRequests: nextState.consultRequests ?? consultRequests,
+            supplyInventory: nextState.supplyInventory ?? supplyInventory,
           })
           if (!mounted.current) return true
           setLastSyncedAt(saved.updatedAt)
@@ -114,7 +117,7 @@ export function DataProvider({ children }) {
       )
       return result
     },
-    [configured, orders, inventory, cancelReturns, shippingInfo, eventOrders, consultRequests],
+    [configured, orders, inventory, cancelReturns, shippingInfo, eventOrders, consultRequests, supplyInventory],
   )
 
   // parsedEventOrders는 같은 주문 파일에서 교재가 아닌 상품(3+1/10원 이벤트
@@ -262,6 +265,27 @@ export function DataProvider({ children }) {
     [persist, consultRequests],
   )
 
+  // 타포(oper.tsai.kr) "재고관리" 화면과 동일한 비품/물품 재고 목록.
+  // 교재별 재고(inventory)와 달리 주문 데이터와 무관한 독립 항목이라
+  // 별도 배열로 관리한다.
+  const addSupplyItem = useCallback(
+    async (item) => {
+      const next = [...supplyInventory, item]
+      setSupplyInventory(next)
+      return persist({ supplyInventory: next })
+    },
+    [persist, supplyInventory],
+  )
+
+  const updateSupplyItem = useCallback(
+    async (id, patch) => {
+      const next = supplyInventory.map((item) => (item.id === id ? { ...item, ...patch } : item))
+      setSupplyInventory(next)
+      return persist({ supplyInventory: next })
+    },
+    [persist, supplyInventory],
+  )
+
   const value = useMemo(
     () => ({
       orders,
@@ -270,6 +294,7 @@ export function DataProvider({ children }) {
       shippingInfo,
       eventOrders,
       consultRequests,
+      supplyInventory,
       loading,
       syncing,
       error,
@@ -286,6 +311,8 @@ export function DataProvider({ children }) {
       uploadReviews,
       addConsultRequest,
       updateConsultRequest,
+      addSupplyItem,
+      updateSupplyItem,
       reload: loadRemote,
       clearError: () => setError(null),
     }),
@@ -296,6 +323,7 @@ export function DataProvider({ children }) {
       shippingInfo,
       eventOrders,
       consultRequests,
+      supplyInventory,
       loading,
       syncing,
       error,
@@ -312,6 +340,8 @@ export function DataProvider({ children }) {
       uploadReviews,
       addConsultRequest,
       updateConsultRequest,
+      addSupplyItem,
+      updateSupplyItem,
       loadRemote,
     ],
   )

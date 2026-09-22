@@ -6,6 +6,8 @@ import ChannelBarCard from '../../components/dashboard/ChannelBarCard'
 import BookRankingTable from '../../components/dashboard/BookRankingTable'
 import InventoryTable from '../../components/dashboard/InventoryTable'
 import LowStockAlertPanel from '../../components/dashboard/LowStockAlertPanel'
+import SupplyInventoryCard from '../../components/dashboard/SupplyInventoryCard'
+import SupplyItemModal from '../../components/dashboard/SupplyItemModal'
 import { defaultDateRange } from '../../utils/dateUtils'
 import {
   aggregateByBook,
@@ -23,14 +25,25 @@ import { exportDashboardToExcel } from '../../utils/exportExcel'
 import './DashboardPage.css'
 
 export default function DashboardPage() {
-  const { orders, inventory, updateInventoryField, updateCurrentStockBulk, addInventoryLoss, resetData, loading } =
-    useData()
+  const {
+    orders,
+    inventory,
+    updateInventoryField,
+    updateCurrentStockBulk,
+    addInventoryLoss,
+    resetData,
+    supplyInventory,
+    addSupplyItem,
+    updateSupplyItem,
+    loading,
+  } = useData()
 
   const [{ startDate, endDate }, setDateRange] = useState(defaultDateRange())
   const [sortKey, setSortKey] = useState('orderCount')
   const [channel, setChannel] = useState('all')
   const [category, setCategory] = useState('all')
   const [search, setSearch] = useState('')
+  const [supplyModal, setSupplyModal] = useState(null) // { item } | { item: null } | null
 
   const channelOptions = CHANNEL_BUCKETS
   const categoryOptions = BOOK_CATEGORIES
@@ -82,6 +95,15 @@ export default function DashboardPage() {
     }
   }
 
+  const handleSaveSupplyItem = (data) => {
+    if (supplyModal.item) {
+      updateSupplyItem(supplyModal.item.id, data)
+    } else {
+      addSupplyItem({ id: crypto.randomUUID(), ...data })
+    }
+    setSupplyModal(null)
+  }
+
   if (loading) {
     return <div className="dashboard-page__loading">데이터를 불러오는 중입니다...</div>
   }
@@ -124,6 +146,18 @@ export default function DashboardPage() {
       </div>
 
       <LowStockAlertPanel rows={shortageRows} />
+
+      <div className="dashboard-page__supply">
+        <SupplyInventoryCard
+          items={supplyInventory}
+          onAdd={() => setSupplyModal({ item: null })}
+          onEdit={(item) => setSupplyModal({ item })}
+        />
+      </div>
+
+      {supplyModal && (
+        <SupplyItemModal item={supplyModal.item} onSave={handleSaveSupplyItem} onCancel={() => setSupplyModal(null)} />
+      )}
     </div>
   )
 }

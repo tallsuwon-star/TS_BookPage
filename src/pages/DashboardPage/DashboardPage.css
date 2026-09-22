@@ -40,3 +40,7 @@
     grid-template-columns: 1fr;
   }
 }
+
+.dashboard-page__supply {
+  margin-top: 20px;
+}
