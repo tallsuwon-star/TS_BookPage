@@ -1,17 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useData } from '../../context/DataContext'
-import { CONSULT_TYPE_SUGGESTIONS, LEARNING_TEAM_MEMBERS, findMemberByIdentifier } from '../../utils/consultRequests'
+import { CONSULT_TYPES_BY_DEPARTMENT, DEPARTMENTS, LEARNING_TEAM_MEMBERS, findMemberByIdentifier } from '../../utils/consultRequests'
 import '../orderManagement/OrderSidePanel.css'
 
-// 운영팀이 학습팀에 상담을 이관할 때 쓰는 등록 폼. 기획안의 "요청등록"
-// 단계(회원검색 / 상담희망일시 / 상담유형·요청내용 / 담당자지정 /
-// 긴급여부)를 그대로 옮겼고, 로그인 기능이 없는 화면이라 "작성자"(운영팀
-// 담당자 이름)도 직접 입력받는다.
+// 운영팀이 학습팀에 상담을 이관할 때 쓰는 등록 폼. 타포 실제 "상담 이관"
+// 화면(2026-09-29 확인)의 필드 구성(담당부서/상담유형/희망일시/상담내용/
+// 담당자지정/회원정보)을 그대로 옮겼고, 로그인 기능이 없는 화면이라
+// "작성자"(운영팀 담당자 이름)도 직접 입력받는다.
 export default function ConsultRequestFormPanel({ onSave, onClose }) {
   const { orders, eventOrders } = useData()
   const [requestedBy, setRequestedBy] = useState('')
   const [memberName, setMemberName] = useState('')
   const [memberIdentifier, setMemberIdentifier] = useState('')
+  const [department, setDepartment] = useState('운영팀')
   const [consultType, setConsultType] = useState('')
   const [content, setContent] = useState('')
   const [preferredAt, setPreferredAt] = useState('')
@@ -19,7 +20,7 @@ export default function ConsultRequestFormPanel({ onSave, onClose }) {
   const [urgent, setUrgent] = useState(false)
   const [error, setError] = useState('')
 
-  // 회원아이디(이메일)를 입력하면 이미 저장된 주문 내역에서 같은 이메일을
+  // 연락처(전화번호)를 입력하면 이미 저장된 주문 내역에서 같은 번호를
   // 찾아 이름을 자동으로 채운다. 사용자가 자동으로 채워진 이름을 직접
   // 고치면(=lastAutoFilledRef와 달라지면) 더 이상 덮어쓰지 않는다.
   const memberMatch = useMemo(
@@ -34,6 +35,13 @@ export default function ConsultRequestFormPanel({ onSave, onClose }) {
     }
   }, [memberMatch])
 
+  // 담당부서를 바꾸면 그 부서의 상담유형 목록으로 새로 골라야 하므로,
+  // 이전 부서에서 고른 값이 남아있지 않게 초기화한다.
+  const handleDepartmentChange = (value) => {
+    setDepartment(value)
+    setConsultType('')
+  }
+
   const handleSubmit = () => {
     if (!memberName.trim() || !content.trim()) {
       setError('회원이름과 상담내용은 필수 입력 항목입니다.')
@@ -45,7 +53,8 @@ export default function ConsultRequestFormPanel({ onSave, onClose }) {
       requestedBy: requestedBy.trim(),
       memberName: memberName.trim(),
       memberIdentifier: memberIdentifier.trim(),
-      consultType: consultType.trim(),
+      department,
+      consultType,
       content: content.trim(),
       preferredAt,
       assignee: assignee.trim(),
@@ -60,7 +69,7 @@ export default function ConsultRequestFormPanel({ onSave, onClose }) {
   return (
     <aside className="order-panel">
       <div className="order-panel__header">
-        <h3>상담 요청 등록</h3>
+        <h3>상담 이관 등록</h3>
         <button type="button" className="order-panel__close" onClick={onClose} aria-label="닫기">
           ✕
         </button>
@@ -81,14 +90,14 @@ export default function ConsultRequestFormPanel({ onSave, onClose }) {
 
       <section className="order-panel__section">
         <h4>회원 검색</h4>
-        <label className="field-label">회원아이디(이메일)</label>
+        <label className="field-label">연락처(전화번호)</label>
         <input
           type="text"
           className="field-input"
           style={{ width: '100%' }}
           value={memberIdentifier}
           onChange={(e) => setMemberIdentifier(e.target.value)}
-          placeholder="예: pianist6478@gmail.com"
+          placeholder="예: 010-0000-0456"
         />
         {memberIdentifier.trim() && (
           <p className="order-panel__muted" style={{ margin: '4px 0 10px' }}>
@@ -110,25 +119,38 @@ export default function ConsultRequestFormPanel({ onSave, onClose }) {
 
       <section className="order-panel__section">
         <h4>상담 내용</h4>
-        <label className="field-label">상담유형</label>
-        <input
-          type="text"
-          className="field-input"
+        <label className="field-label">담당부서</label>
+        <select
+          className="field-select"
           style={{ width: '100%', marginBottom: 10 }}
-          list="consult-type-suggestions"
+          value={department}
+          onChange={(e) => handleDepartmentChange(e.target.value)}
+        >
+          {DEPARTMENTS.map((d) => (
+            <option key={d} value={d}>
+              {d}
+            </option>
+          ))}
+        </select>
+
+        <label className="field-label">상담유형</label>
+        <select
+          className="field-select"
+          style={{ width: '100%', marginBottom: 10 }}
           value={consultType}
           onChange={(e) => setConsultType(e.target.value)}
-          placeholder="예: 퇴사 강사 안내"
-        />
-        <datalist id="consult-type-suggestions">
-          {CONSULT_TYPE_SUGGESTIONS.map((t) => (
-            <option key={t} value={t} />
+        >
+          <option value="">선택하세요</option>
+          {CONSULT_TYPES_BY_DEPARTMENT[department].map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
           ))}
-        </datalist>
+        </select>
 
-        <label className="field-label">상담 희망일</label>
+        <label className="field-label">상담 희망일시</label>
         <input
-          type="date"
+          type="datetime-local"
           className="field-input"
           style={{ width: '100%', marginBottom: 10 }}
           value={preferredAt}

@@ -265,6 +265,21 @@ export function DataProvider({ children }) {
     [persist, consultRequests],
   )
 
+  // "상담대기 담당매니저 자동배정"처럼 여러 건을 한 번에 갱신할 때 쓴다.
+  // updateConsultRequest를 반복 호출하면 매번 같은(오래된) consultRequests
+  // 스냅샷을 기준으로 next를 계산해 서로 덮어쓰는 경쟁 상태가 생기므로,
+  // { id: patch } 맵을 한 번에 받아 단일 setState/저장으로 처리한다.
+  const bulkUpdateConsultRequests = useCallback(
+    async (patchesById) => {
+      const next = consultRequests.map((r) =>
+        patchesById[r.id] ? { ...r, ...patchesById[r.id], updatedAt: new Date().toISOString() } : r,
+      )
+      setConsultRequests(next)
+      return persist({ consultRequests: next })
+    },
+    [persist, consultRequests],
+  )
+
   // 타포(oper.tsai.kr) "재고관리" 화면과 동일한 비품/물품 재고 목록.
   // 교재별 재고(inventory)와 달리 주문 데이터와 무관한 독립 항목이라
   // 별도 배열로 관리한다.
@@ -311,6 +326,7 @@ export function DataProvider({ children }) {
       uploadReviews,
       addConsultRequest,
       updateConsultRequest,
+      bulkUpdateConsultRequests,
       addSupplyItem,
       updateSupplyItem,
       reload: loadRemote,
@@ -340,6 +356,7 @@ export function DataProvider({ children }) {
       uploadReviews,
       addConsultRequest,
       updateConsultRequest,
+      bulkUpdateConsultRequests,
       addSupplyItem,
       updateSupplyItem,
       loadRemote,
