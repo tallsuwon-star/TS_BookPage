@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CONSULT_STATUS_OPTIONS, LEARNING_TEAM_MEMBERS, formatShortDateTime } from '../../utils/consultRequests'
+import { CONSULT_STATUS_OPTIONS, MANAGER_NAMES, formatShortDateTime, getManagerDuty } from '../../utils/consultRequests'
 import '../orderManagement/OrderSidePanel.css'
 
 // 기획안의 "상담상세" 화면: 회원 기본정보/요청 원문은 그대로 보여주고,
@@ -67,10 +67,15 @@ export default function ConsultRequestDetailPanel({ record, onSave, onClose }) {
           onChange={(e) => setAssignee(e.target.value)}
         />
         <datalist id="learning-team-members">
-          {LEARNING_TEAM_MEMBERS.map((m) => (
+          {MANAGER_NAMES.map((m) => (
             <option key={m} value={m} />
           ))}
         </datalist>
+        {getManagerDuty(assignee) && (
+          <p className="order-panel__muted" style={{ margin: '-4px 0 10px' }}>
+            담당업무: {getManagerDuty(assignee)}
+          </p>
+        )}
         <label className="field-label">진행상태</label>
         <select
           className="field-select"

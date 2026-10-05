@@ -27,10 +27,38 @@ export const CONSULT_TYPE_SUGGESTIONS = [
   ...CONSULT_TYPES_BY_DEPARTMENT.학습팀,
 ]
 
-// 담당자는 학습팀뿐 아니라 운영팀으로 다시 배정될 수도 있어 자유 입력을
-// 막지는 않지만, 아직 직원 명단을 별도 DB에서 가져올 수 없어 자주
-// 배정되는 학습팀 인원을 타이핑 후보로만 미리 채워둔다.
-export const LEARNING_TEAM_MEMBERS = ['김룰루', '이학습', '최학습', '정학습']
+// 타포(oper) "매니저관리 > 매니저 현황"(2026-10-05 확인)의 실제 명단.
+// 이름과 담당업무만 가져왔다 — 연락처(내선번호)·성별·근무시간·입사일 같은
+// 개인정보/민감정보는 쓰지 않는다. 담당자는 특정 팀에 묶이지 않고 자유
+// 입력도 허용하지만, 자주 배정되는 실제 매니저를 타이핑 후보로 미리 채워둔다.
+export const MANAGERS = [
+  { name: '이슬', duty: '선임 / CS' },
+  { name: '이강훈', duty: 'CS / 교육 / 선임' },
+  { name: '김효빈', duty: 'CS' },
+  { name: '이종세', duty: '미납 / CS' },
+  { name: '이현정', duty: 'LAT 상담' },
+  { name: '서영범', duty: '무체 / CS 교육 중' },
+  { name: '전수현', duty: 'CS' },
+  { name: '권은오', duty: '무체' },
+  { name: '장해민', duty: '선임 / CS' },
+  { name: '박총명', duty: '미납 / CS' },
+  { name: '오민근', duty: 'CS' },
+  { name: '현솔민', duty: 'CS' },
+  { name: '김준휘', duty: 'CS' },
+  { name: '송윤재', duty: 'CS' },
+  { name: '손준기', duty: '더블 엔트리, 이벤트' },
+  { name: '손채윤', duty: 'CS' },
+  { name: '신해란', duty: '무체 / CS 교육 중' },
+  { name: '조유진', duty: '무체 / CS 교육 중' },
+  { name: '김수현', duty: '무체' },
+  { name: '나윤아', duty: '무체' },
+]
+
+export const MANAGER_NAMES = MANAGERS.map((m) => m.name)
+
+export function getManagerDuty(name) {
+  return MANAGERS.find((m) => m.name === name)?.duty || ''
+}
 
 export function isConsultResolved(status) {
   return status === '상담완료'

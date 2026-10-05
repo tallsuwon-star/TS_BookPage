@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useData } from '../../context/DataContext'
-import { CONSULT_TYPES_BY_DEPARTMENT, DEPARTMENTS, LEARNING_TEAM_MEMBERS, findMemberByIdentifier } from '../../utils/consultRequests'
+import {
+  CONSULT_TYPES_BY_DEPARTMENT,
+  DEPARTMENTS,
+  MANAGER_NAMES,
+  findMemberByIdentifier,
+  getManagerDuty,
+} from '../../utils/consultRequests'
 import '../orderManagement/OrderSidePanel.css'
 
 // 운영팀이 학습팀에 상담을 이관할 때 쓰는 등록 폼. 타포 실제 "상담 이관"
@@ -180,10 +186,15 @@ export default function ConsultRequestFormPanel({ onSave, onClose }) {
           placeholder="담당자 이름을 입력하거나 선택하세요"
         />
         <datalist id="learning-team-members">
-          {LEARNING_TEAM_MEMBERS.map((m) => (
+          {MANAGER_NAMES.map((m) => (
             <option key={m} value={m} />
           ))}
         </datalist>
+        {getManagerDuty(assignee) && (
+          <p className="order-panel__muted" style={{ margin: '-4px 0 10px' }}>
+            담당업무: {getManagerDuty(assignee)}
+          </p>
+        )}
         <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
           <input type="checkbox" checked={urgent} onChange={(e) => setUrgent(e.target.checked)} />
           긴급 요청

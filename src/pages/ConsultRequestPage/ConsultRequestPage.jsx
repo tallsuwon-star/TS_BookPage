@@ -5,7 +5,7 @@ import ConsultRequestFilterBar from '../../components/consultRequest/ConsultRequ
 import ConsultRequestListTable from '../../components/consultRequest/ConsultRequestListTable'
 import ConsultRequestFormPanel from '../../components/consultRequest/ConsultRequestFormPanel'
 import ConsultRequestDetailPanel from '../../components/consultRequest/ConsultRequestDetailPanel'
-import { LEARNING_TEAM_MEMBERS, filterConsultRequests, getAllConsultTypes } from '../../utils/consultRequests'
+import { MANAGER_NAMES, filterConsultRequests, getAllConsultTypes } from '../../utils/consultRequests'
 import '../DashboardPage/DashboardPage.css'
 import '../OrderManagementPage/OrderManagementPage.css'
 
@@ -37,7 +37,7 @@ export default function ConsultRequestPage() {
 
   // 타포의 "상담대기 담당매니저 자동배정" 버튼과 같은 기능. 실제 배정
   // 규칙(누구에게 어떤 기준으로 배정하는지)은 화면만으로는 알 수 없어,
-  // 담당자가 아직 없는 상담대기 건을 학습팀 명단에 라운드로빈으로
+  // 담당자가 아직 없는 상담대기 건을 실제 매니저 명단에 라운드로빈으로
   // 임시 배정하는 방식으로 구현했다 — 실제 규칙이 정해지면 교체할 것.
   const handleAutoAssign = () => {
     const targets = consultRequests.filter((r) => r.status === '상담대기' && !r.assignee)
@@ -48,7 +48,7 @@ export default function ConsultRequestPage() {
     if (!window.confirm(`담당자가 없는 상담대기 ${targets.length}건을 자동 배정합니다. 계속할까요?`)) return
     const patchesById = {}
     targets.forEach((r, idx) => {
-      patchesById[r.id] = { assignee: LEARNING_TEAM_MEMBERS[idx % LEARNING_TEAM_MEMBERS.length] }
+      patchesById[r.id] = { assignee: MANAGER_NAMES[idx % MANAGER_NAMES.length] }
     })
     bulkUpdateConsultRequests(patchesById)
   }
