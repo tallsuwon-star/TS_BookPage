@@ -7636,8 +7636,25 @@
       "resultNote": "",
       "nextConsultAt": "",
       "updatedAt": "2026-10-05T06:52:29.082Z"
+    },
+    {
+      "id": "1201713a-c06a-475a-8968-47a57830857b",
+      "createdAt": "2026-10-05T06:53:02.805Z",
+      "requestedBy": "미납담당자",
+      "memberName": "김미납",
+      "memberIdentifier": "",
+      "department": "운영팀",
+      "consultType": "미납 문의",
+      "content": "미납",
+      "preferredAt": "2026-10-06T17:55",
+      "assignee": "",
+      "urgent": false,
+      "status": "상담대기",
+      "resultNote": "",
+      "nextConsultAt": "",
+      "updatedAt": "2026-10-05T06:53:02.805Z"
     }
   ],
   "supplyInventory": [],
-  "updatedAt": "2026-10-05T06:52:29.082Z"
+  "updatedAt": "2026-10-05T06:53:02.806Z"
 }
