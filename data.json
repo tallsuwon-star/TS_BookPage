@@ -7647,14 +7647,14 @@
       "consultType": "미납 문의",
       "content": "미납",
       "preferredAt": "2026-10-06T17:55",
-      "assignee": "",
+      "assignee": "이슬",
       "urgent": false,
       "status": "상담대기",
       "resultNote": "",
       "nextConsultAt": "",
-      "updatedAt": "2026-10-05T06:53:02.805Z"
+      "updatedAt": "2026-10-05T06:53:07.677Z"
     }
   ],
   "supplyInventory": [],
-  "updatedAt": "2026-10-05T06:53:02.806Z"
+  "updatedAt": "2026-10-05T06:53:07.678Z"
 }
